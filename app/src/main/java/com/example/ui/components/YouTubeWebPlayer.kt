@@ -36,6 +36,9 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 
 @Stable
 class YouTubePlayerController {
@@ -126,8 +129,6 @@ fun YouTubeWebPlayer(
                 loadWithOverviewMode = true
                 useWideViewPort = true
                 mixedContentMode = WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE
-                userAgentString =
-                    "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36"
             }
 
             addJavascriptInterface(
@@ -143,7 +144,7 @@ fun YouTubeWebPlayer(
                     @JavascriptInterface
                     fun onPlayerError(code: Int) {
                         mainHandler.post {
-                            if (code == 100 || code == 101 || code == 150) {
+                            if (code == 100 || code == 101 || code == 150 || code == 152 || code == 153) {
                                 currentErrorCb()
                             }
                         }
@@ -228,12 +229,14 @@ fun YouTubeWebPlayer(
         }
     }
 
+    val appOrigin = remember(context) { "https://${context.packageName}" }
+
     LaunchedEffect(videoId) {
         if (loadedVideoId.isEmpty()) {
             loadedVideoId = videoId
             webView.loadDataWithBaseURL(
-                "https://www.youtube.com",
-                buildYouTubeHtml(videoId),
+                appOrigin,
+                buildYouTubeHtml(videoId, appOrigin),
                 "text/html",
                 "utf-8",
                 null,
@@ -248,8 +251,19 @@ fun YouTubeWebPlayer(
         controller.setPlaybackRate(playbackSpeed)
     }
 
-    DisposableEffect(Unit) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner, webView) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_PAUSE -> webView.onPause()
+                Lifecycle.Event.ON_RESUME -> webView.onResume()
+                else -> Unit
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
         onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
             controller.exitFullscreen()
             controller.webView = null
             restorePortraitSystemBars()
@@ -266,11 +280,12 @@ fun YouTubeWebPlayer(
     }
 }
 
-private fun buildYouTubeHtml(initialVideoId: String): String = """
+private fun buildYouTubeHtml(initialVideoId: String, appOrigin: String): String = """
     <!DOCTYPE html>
     <html>
     <head>
       <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+      <meta name="referrer" content="strict-origin-when-cross-origin">
       <style>
         html, body {
           margin: 0;
@@ -286,29 +301,25 @@ private fun buildYouTubeHtml(initialVideoId: String): String = """
           left: 0;
           width: 100%;
           height: 100%;
+          border: 0;
         }
       </style>
     </head>
     <body>
-      <div id="player"></div>
+      <iframe
+        id="player"
+        src="https://www.youtube.com/embed/$initialVideoId?enablejsapi=1&autoplay=1&playsinline=1&rel=0&modestbranding=1&fs=1&origin=$appOrigin&widget_referrer=$appOrigin"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+        allowfullscreen>
+      </iframe>
       <script src="https://www.youtube.com/iframe_api"></script>
       <script>
         var player;
-        var pendingVideoId = '$initialVideoId';
         var currentState = -1;
 
         function onYouTubeIframeAPIReady() {
           player = new YT.Player('player', {
-            videoId: pendingVideoId,
-            playerVars: {
-              autoplay: 1,
-              playsinline: 1,
-              rel: 0,
-              modestbranding: 1,
-              fs: 1,
-              enablejsapi: 1,
-              origin: 'https://www.youtube.com'
-            },
             events: {
               onReady: function(e) {
                 e.target.playVideo();
@@ -344,7 +355,10 @@ private fun buildYouTubeHtml(initialVideoId: String): String = """
           if (player && player.loadVideoById) {
             player.loadVideoById(id);
           } else {
-            pendingVideoId = id;
+            var iframe = document.getElementById('player');
+            if (iframe) {
+              iframe.src = 'https://www.youtube.com/embed/' + id + '?enablejsapi=1&autoplay=1&playsinline=1&rel=0&modestbranding=1&fs=1&origin=$appOrigin&widget_referrer=$appOrigin';
+            }
           }
         };
 
