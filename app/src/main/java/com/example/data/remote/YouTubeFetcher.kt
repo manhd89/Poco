@@ -172,7 +172,16 @@ class YouTubeFetcher {
         }.getOrDefault(emptyList())
 
         if (fromTrending.isNotEmpty()) return@withContext fromTrending
-        searchVideos("trending music gaming tech vietnam")
+        val fromSearch = runCatching { searchVideos("trending music gaming tech vietnam") }.getOrDefault(emptyList())
+        if (fromSearch.isNotEmpty()) return@withContext fromSearch
+
+        val rssFallback = coroutineScope {
+            curatedChannels.take(4).map { ch ->
+                async { runCatching { fetchChannelRss(ch.id) }.getOrDefault(emptyList()) }
+            }.awaitAll().flatten()
+        }
+        if (rssFallback.isNotEmpty()) return@withContext rssFallback
+        throw IllegalStateException("Không thể tải danh sách thịnh hành")
     }
 
     suspend fun fetchChannelRss(channelId: String): List<VideoItem> = withContext(Dispatchers.IO) {

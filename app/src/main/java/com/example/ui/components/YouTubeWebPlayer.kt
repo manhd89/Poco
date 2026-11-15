@@ -3,12 +3,16 @@ package com.example.ui.components
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.pm.ActivityInfo
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.JavascriptInterface
+import android.webkit.RenderProcessGoneDetail
 import android.webkit.WebChromeClient
+import android.webkit.WebResourceError
+import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -148,7 +152,30 @@ fun YouTubeWebPlayer(
                 "AndroidBridge",
             )
 
-            webViewClient = object : WebViewClient() {}
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                setRendererPriorityPolicy(WebView.RENDERER_PRIORITY_IMPORTANT, true)
+            }
+
+            webViewClient = object : WebViewClient() {
+                override fun onReceivedError(
+                    view: WebView?,
+                    request: WebResourceRequest?,
+                    error: WebResourceError?,
+                ) {
+                    super.onReceivedError(view, request, error)
+                    if (request?.isForMainFrame == true) {
+                        currentErrorCb()
+                    }
+                }
+
+                override fun onRenderProcessGone(
+                    view: WebView?,
+                    detail: RenderProcessGoneDetail?,
+                ): Boolean {
+                    currentErrorCb()
+                    return true
+                }
+            }
 
             webChromeClient = object : WebChromeClient() {
                 override fun onShowCustomView(view: View?, callback: CustomViewCallback?) {
@@ -189,6 +216,7 @@ fun YouTubeWebPlayer(
 
     controller.webView = webView
     controller.exitFullscreenCallback = {
+        webView.evaluateJavascript("if (document.fullscreenElement) document.exitFullscreen();", null)
         if (customFullscreenView != null) {
             val decor = activity?.window?.decorView as? FrameLayout
             customFullscreenView?.let { decor?.removeView(it) }

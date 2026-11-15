@@ -4,7 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Box
+import coil.Coil
+import coil.ImageLoader
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
@@ -66,6 +67,12 @@ import com.example.ui.viewmodel.XemTubeViewModel
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Coil.setImageLoader(
+            ImageLoader.Builder(applicationContext)
+                .allowHardware(false)
+                .crossfade(true)
+                .build(),
+        )
         enableEdgeToEdge()
         setContent {
             val viewModel: XemTubeViewModel = viewModel()
