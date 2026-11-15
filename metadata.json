@@ -1,0 +1,6 @@
+{
+  "name": "XemTube",
+  "description": "Ứng dụng xem và khám phá video YouTube mượt mà với trình phát tích hợp, tìm kiếm tức thì, đăng ký kênh, danh sách yêu thích và lịch sử xem.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
