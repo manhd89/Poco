@@ -22,10 +22,10 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.TrendingUp
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Search
-import androidx.compose.material.icons.rounded.TrendingUp
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -265,7 +265,7 @@ fun SearchScreen(
                                 label = { Text(topic) },
                                 leadingIcon = {
                                     Icon(
-                                        imageVector = Icons.Rounded.TrendingUp,
+                                        imageVector = Icons.AutoMirrored.Rounded.TrendingUp,
                                         contentDescription = null,
                                         modifier = Modifier.size(16.dp),
                                         tint = MaterialTheme.colorScheme.primary,

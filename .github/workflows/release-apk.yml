@@ -31,14 +31,28 @@ jobs:
           distribution: temurin
           java-version: "21"
 
+      - name: Chấp nhận Android SDK licenses
+        run: |
+          if [ -d "$ANDROID_HOME/cmdline-tools/latest/bin" ]; then
+            yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null 2>&1 || true
+          fi
+
       - name: Thiết lập Gradle 9.3.1
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "9.3.1"
 
-      - name: Giải mã debug.keystore
-        if: ${{ hashFiles('debug.keystore.base64') != '' }}
-        run: base64 -d debug.keystore.base64 > debug.keystore
+      - name: Chuẩn bị debug.keystore
+        run: |
+          if [ -f "debug.keystore.base64" ]; then
+            base64 -d debug.keystore.base64 > debug.keystore
+          fi
+          if [ ! -f "debug.keystore" ]; then
+            keytool -genkeypair -v -keystore debug.keystore \
+              -storepass android -alias androiddebugkey -keypass android \
+              -keyalg RSA -keysize 2048 -validity 10000 \
+              -dname "CN=Android Debug,O=Android,C=US"
+          fi
 
       - name: Thiết lập Release Keystore (nếu có Secrets)
         id: signing
@@ -60,11 +74,17 @@ jobs:
           KEYSTORE_PATH: ${{ github.workspace }}/my-upload-key.jks
           STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: gradle :app:assembleRelease --no-daemon
+        run: >
+          gradle :app:assembleRelease
+          --no-daemon --max-workers=2 --stacktrace
+          -Dorg.gradle.jvmargs="-Xmx3g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8"
 
       - name: Build Debug APK (khi chưa cấu hình Release Keystore Secrets)
         if: steps.signing.outputs.has_release_keystore != 'true'
-        run: gradle :app:assembleDebug --no-daemon
+        run: >
+          gradle :app:assembleDebug
+          --no-daemon --max-workers=2 --stacktrace
+          -Dorg.gradle.jvmargs="-Xmx3g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8"
 
       - name: Xác định Tag và chuẩn bị file APK
         id: prepare_release
