@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="mini_player_elevation">8dp</dimen>
+    <dimen name="page_rail_width">80dp</dimen>
+    <dimen name="page_drawer_width">240dp</dimen>
+    <dimen name="bottom_nav_height">56dp</dimen>
+</resources>

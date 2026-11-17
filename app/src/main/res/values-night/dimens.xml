@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Nền mini player tối đã đủ tách khỏi nền, không cần bóng đổ. -->
+    <dimen name="mini_player_elevation">0dp</dimen>
+</resources>

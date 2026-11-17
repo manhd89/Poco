@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Surface Media3 dùng chung cho player nhúng, fullscreen, PiP và mini player.
+    PlayerSurfaceHost inflate layout này đúng một lần rồi di chuyển (re-parent)
+    PlayerView giữa các container. Dùng TextureView thay vì SurfaceView mặc
+    định để tránh màn hình đen sau khi tắt/mở khoá màn hình hoặc khi chuyển
+    đổi toàn màn hình.
+-->
+<androidx.media3.ui.PlayerView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black"
+    app:use_controller="false"
+    app:surface_type="texture_view"
+    app:resize_mode="fit"
+    app:shutter_background_color="@android:color/black" />

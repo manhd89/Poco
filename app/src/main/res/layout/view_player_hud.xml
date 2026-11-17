@@ -1,0 +1,499 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Lớp điều khiển (HUD) nằm trên PlayerView của Media3. Toàn bộ màu ở đây
+    dành cho nền video tối nên không đổi theo theme sáng/tối của ứng dụng.
+    Bố cục gồm ba vùng: thanh trên, cụm phát ở giữa và thanh dưới (thời gian,
+    thanh tua, hàng nút). Chế độ nhúng/fullscreen được điều chỉnh trong
+    PlayerHudView.setCompactMode().
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/player_hud_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipChildren="false"
+    android:clipToPadding="false">
+
+    <!-- Scrim trên/dưới: giữ nội dung đọc được trên khung hình sáng. -->
+    <View
+        android:id="@+id/hud_top_gradient"
+        android:layout_width="match_parent"
+        android:layout_height="136dp"
+        android:layout_gravity="top"
+        android:background="@drawable/bg_player_top_gradient"
+        android:importantForAccessibility="no" />
+
+    <View
+        android:id="@+id/hud_bottom_gradient"
+        android:layout_width="match_parent"
+        android:layout_height="204dp"
+        android:layout_gravity="bottom"
+        android:background="@drawable/bg_player_bottom_gradient"
+        android:importantForAccessibility="no" />
+
+    <!-- Thanh trên: thu nhỏ • tiêu đề/kênh • tự động phát • PiP -->
+    <LinearLayout
+        android:id="@+id/hud_top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_gravity="top"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="4dp"
+        android:paddingEnd="6dp">
+
+        <ImageButton
+            android:id="@+id/hud_close"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/bg_player_control_ripple"
+            android:contentDescription="@string/player_minimize"
+            android:padding="10dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_expand_more"
+            android:tint="@color/player_on_scrim" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/hud_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif-medium"
+                android:maxLines="1"
+                android:shadowColor="#99000000"
+                android:shadowDx="0"
+                android:shadowDy="1"
+                android:shadowRadius="3"
+                android:textColor="@color/player_on_scrim"
+                android:textSize="15sp"
+                tools:text="Tên video đang phát" />
+
+            <TextView
+                android:id="@+id/hud_channel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:shadowColor="#99000000"
+                android:shadowDx="0"
+                android:shadowDy="1"
+                android:shadowRadius="3"
+                android:textColor="@color/player_on_scrim_secondary"
+                android:textSize="12sp"
+                tools:text="Tên kênh" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/hud_autoplay"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/bg_player_control_ripple"
+            android:contentDescription="@string/player_autoplay"
+            android:padding="10dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_autorenew"
+            android:tint="@color/player_on_scrim" />
+
+        <ImageButton
+            android:id="@+id/hud_pip"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="@drawable/bg_player_control_ripple"
+            android:contentDescription="@string/player_pip"
+            android:padding="10dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_picture_in_picture"
+            android:tint="@color/player_on_scrim" />
+    </LinearLayout>
+
+    <!-- Cụm giữa: video trước • phát/tạm dừng • video kế tiếp -->
+    <LinearLayout
+        android:id="@+id/hud_center_controls"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/hud_previous"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="24dp"
+            android:background="@drawable/bg_player_control_ripple"
+            android:contentDescription="@string/player_previous"
+            android:padding="8dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_skip_previous"
+            android:tint="@color/player_on_scrim" />
+
+        <ImageButton
+            android:id="@+id/hud_play_pause"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:background="@drawable/bg_player_center_button"
+            android:contentDescription="@string/player_play_pause"
+            android:padding="18dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_play_arrow"
+            android:tint="@color/player_on_scrim" />
+
+        <ImageButton
+            android:id="@+id/hud_next"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="24dp"
+            android:background="@drawable/bg_player_control_ripple"
+            android:contentDescription="@string/player_next"
+            android:padding="8dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_skip_next"
+            android:tint="@color/player_on_scrim" />
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/hud_buffering"
+        android:layout_width="46dp"
+        android:layout_height="46dp"
+        android:layout_gravity="center"
+        android:indeterminate="true"
+        android:indeterminateTint="@color/player_on_scrim"
+        android:visibility="gone" />
+
+    <!-- Thanh dưới: thời gian • thanh tua • hàng nút -->
+    <LinearLayout
+        android:id="@+id/hud_bottom_controls"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:clipChildren="false"
+        android:orientation="vertical"
+        android:paddingBottom="2dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp">
+
+            <TextView
+                android:id="@+id/hud_time_current"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-medium"
+                android:shadowColor="#99000000"
+                android:shadowDx="0"
+                android:shadowDy="1"
+                android:shadowRadius="3"
+                android:text="@string/player_time_zero"
+                android:textColor="@color/player_on_scrim"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/hud_time_total"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/player_time_zero_total"
+                android:textColor="@color/player_on_scrim_tertiary"
+                android:textSize="12sp" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/hud_live_badge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_player_live_badge"
+                android:fontFamily="sans-serif-medium"
+                android:paddingStart="6dp"
+                android:paddingTop="2dp"
+                android:paddingEnd="6dp"
+                android:paddingBottom="2dp"
+                android:text="@string/player_live"
+                android:textColor="@color/player_on_scrim"
+                android:textSize="10sp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/hud_time_remaining"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@string/player_time_zero_remaining"
+                android:textColor="@color/player_on_scrim_tertiary"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/hud_seek_container"
+            android:layout_width="match_parent"
+            android:layout_height="34dp"
+            android:clipChildren="false">
+
+            <com.luxysiv.puretube.ui.player.PlayerSeekBar
+                android:id="@+id/hud_seek"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
+                android:max="1000"
+                android:paddingStart="6dp"
+                android:paddingEnd="6dp"
+                android:progress="0"
+                android:progressDrawable="@drawable/progress_player_seek"
+                android:splitTrack="false"
+                android:thumb="@drawable/thumb_player_seek" />
+
+            <TextView
+                android:id="@+id/hud_seek_preview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|start"
+                android:background="@drawable/bg_player_seek_bubble"
+                android:elevation="4dp"
+                android:fontFamily="sans-serif-medium"
+                android:paddingStart="8dp"
+                android:paddingTop="4dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="4dp"
+                android:textColor="@color/player_on_scrim"
+                android:textSize="12sp"
+                android:visibility="gone"
+                tools:ignore="RelativeOverlap"
+                tools:text="12:34" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/hud_button_row"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp">
+
+            <ImageButton
+                android:id="@+id/hud_mix"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:background="@drawable/bg_player_control_ripple"
+                android:contentDescription="@string/player_mix"
+                android:padding="9dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_playlist_play"
+                android:tint="@color/player_on_scrim"
+                android:visibility="gone" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <ImageButton
+                android:id="@+id/hud_captions"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:background="@drawable/bg_player_control_ripple"
+                android:contentDescription="@string/player_captions"
+                android:padding="9dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_subtitles"
+                android:tint="@color/player_on_scrim"
+                android:visibility="gone" />
+
+            <ImageButton
+                android:id="@+id/hud_settings"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:background="@drawable/bg_player_control_ripple"
+                android:contentDescription="@string/player_settings_desc"
+                android:padding="9dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_settings"
+                android:tint="@color/player_on_scrim" />
+
+            <ImageButton
+                android:id="@+id/hud_fullscreen"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:background="@drawable/bg_player_control_ripple"
+                android:contentDescription="@string/player_fullscreen"
+                android:padding="9dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_fullscreen"
+                android:tint="@color/player_on_scrim" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Nút bỏ qua đoạn SponsorBlock, nổi phía trên thanh dưới. -->
+    <TextView
+        android:id="@+id/hud_sponsor_skip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="104dp"
+        android:background="@drawable/bg_player_sponsor"
+        android:elevation="4dp"
+        android:fontFamily="sans-serif-medium"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="8dp"
+        android:text="@string/player_skip_segment"
+        android:textColor="#FF000000"
+        android:textSize="13sp"
+        android:visibility="gone"
+        tools:ignore="UnusedAttribute" />
+
+    <ImageButton
+        android:id="@+id/hud_lock"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="bottom|start"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="104dp"
+        android:background="@drawable/bg_player_icon_button"
+        android:contentDescription="@string/player_lock_controls"
+        android:padding="10dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_lock"
+        android:tint="@color/player_on_scrim"
+        android:visibility="gone" />
+
+    <ImageButton
+        android:id="@+id/hud_unlock"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_gravity="bottom|start"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/bg_player_icon_button"
+        android:contentDescription="@string/player_unlock_controls"
+        android:padding="11dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_lock_open"
+        android:tint="@color/player_on_scrim"
+        android:visibility="gone" />
+
+    <!-- Lỗi phát: phủ tối toàn bộ video để thông điệp luôn rõ. -->
+    <FrameLayout
+        android:id="@+id/hud_error"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#B3000000"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_player_error"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <ImageView
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:alpha="0.85"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_cloud_off"
+                android:tint="@color/player_on_scrim" />
+
+            <TextView
+                android:id="@+id/hud_error_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:text="@string/player_error_title"
+                android:textColor="@color/player_on_scrim"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/hud_error_detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:gravity="center"
+                android:maxLines="3"
+                android:textColor="@color/player_on_scrim_secondary"
+                android:textSize="12sp"
+                android:visibility="gone" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/hud_error_retry"
+                style="@style/Widget.Material3.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/action_retry"
+                android:textAllCaps="false" />
+        </LinearLayout>
+    </FrameLayout>
+
+    <!-- Phản hồi double-tap: trái/phải = tua 10 giây, giữa = play/pause. -->
+    <FrameLayout
+        android:id="@+id/hud_flash"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipChildren="false"
+        android:clickable="false"
+        android:focusable="false"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:id="@+id/hud_flash_pill"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_player_flash"
+            android:gravity="center"
+            android:minWidth="96dp"
+            android:minHeight="96dp"
+            android:orientation="vertical"
+            android:padding="14dp">
+
+            <ImageView
+                android:id="@+id/hud_flash_icon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:contentDescription="@null"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_forward_10"
+                android:tint="@color/player_on_scrim" />
+
+            <TextView
+                android:id="@+id/hud_flash_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:gravity="center"
+                android:minWidth="64dp"
+                android:maxLines="1"
+                android:textColor="@color/player_on_scrim"
+                android:textSize="13sp"
+                tools:text="10 giây" />
+        </LinearLayout>
+    </FrameLayout>
+</FrameLayout>

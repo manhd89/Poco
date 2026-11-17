@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/player_activity_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/pure_background">
+
+    <!--
+        Khung cắt cho hiệu ứng thu nhỏ. Cả trang xem nằm trong đây và được
+        scale/translate như một khối; khung cắt thu dần về đúng khung mini
+        player để phần thông tin/bình luận biến mất liền mạch.
+    -->
+    <com.luxysiv.puretube.ui.player.MinimizeClipLayout
+        android:id="@+id/player_clip_host"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!--
+            Nền đục để khi cả trang thu nhỏ, khối nhìn thấy là một tấm thẻ liền
+            mạch thay vì lộ nền tối của cửa sổ qua các khe trong suốt.
+        -->
+        <FrameLayout
+            android:id="@+id/player_page_root"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/pure_background">
+
+            <!--
+                Sheet duy nhất của trang xem: nằm sát đáy video, bo góc hai bên.
+                Tay cầm được giữ cố định ở đầu sheet; vuốt xuống trên tay cầm
+                (hoặc tiêu đề "Video liên quan") sẽ chuyển sang toàn màn hình.
+            -->
+            <FrameLayout
+                android:id="@+id/player_details_sheet"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_player_details_sheet">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <FrameLayout
+                        android:id="@+id/player_details_header"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:clickable="true"
+                        android:contentDescription="@string/player_swipe_down_fullscreen"
+                        android:focusable="true">
+
+                        <View
+                            android:layout_width="32dp"
+                            android:layout_height="4dp"
+                            android:layout_gravity="center"
+                            android:background="@drawable/bg_sheet_handle" />
+                    </FrameLayout>
+
+                    <ScrollView
+                        android:id="@+id/player_details_scroll"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:clipToPadding="false"
+                        android:fillViewport="true"
+                        android:scrollbars="none">
+
+                        <LinearLayout
+                            android:id="@+id/player_details_container"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:paddingStart="16dp"
+                            android:paddingTop="4dp"
+                            android:paddingEnd="16dp"
+                            android:paddingBottom="32dp" />
+                    </ScrollView>
+                </LinearLayout>
+            </FrameLayout>
+
+            <!--
+                Khung video được vẽ sau cùng để luôn nằm trên sheet khi thu nhỏ:
+                nếu bị nội dung che sẽ trông như video biến mất giữa hiệu ứng.
+            -->
+            <FrameLayout
+                android:id="@+id/player_video_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </FrameLayout>
+    </com.luxysiv.puretube.ui.player.MinimizeClipLayout>
+</FrameLayout>

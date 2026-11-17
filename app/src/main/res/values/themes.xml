@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--
+        Theme XML dùng chung cho giao diện View. Các màu được khai báo trong
+        values/colors.xml và values-night/colors.xml, nhờ vậy giao diện sáng/tối
+        giữ được cùng một bảng màu trên toàn ứng dụng.
+    -->
+    <style name="Theme.MyApplication" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/pure_primary</item>
+        <item name="colorOnPrimary">@color/pure_on_primary</item>
+        <item name="colorSurface">@color/pure_surface</item>
+        <item name="colorOnSurface">@color/pure_on_surface</item>
+        <item name="colorSurfaceVariant">@color/pure_surface_variant</item>
+        <item name="colorOnSurfaceVariant">@color/pure_on_surface_variant</item>
+        <item name="colorOutlineVariant">@color/pure_outline_variant</item>
+        <item name="android:colorBackground">@color/pure_background</item>
+        <item name="android:windowBackground">@color/pure_background</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+</resources>

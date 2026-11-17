@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingStart="24dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="24dp"
+    android:paddingBottom="4dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/settings_sponsor_api_message"
+        android:textColor="@color/pure_on_surface_variant"
+        android:textSize="12sp" />
+
+    <EditText
+        android:id="@+id/settings_sponsor_api_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:hint="@string/settings_sponsor_api_hint"
+        android:inputType="textUri"
+        android:maxLines="1"
+        android:textColor="@color/pure_on_surface"
+        android:textColorHint="@color/pure_on_surface_variant"
+        android:textSize="16sp" />
+</LinearLayout>
