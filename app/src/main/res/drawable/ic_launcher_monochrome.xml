@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Lớp monochrome cho Themed Icons (Android 13+): hệ thống tự tô màu theo theme. -->
+<!-- Lớp monochrome cho Themed Icons (Android 13+): đồng bộ biểu tượng Play bo tròn PureTube. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
@@ -8,5 +8,5 @@
 
     <path
         android:fillColor="#FF000000"
-        android:pathData="M46.21,38.97 L62.99,49.8 A5,5 0 0,1 62.99,58.2 L40.79,75.48 A5,5 0 0,1 38.5,71.27 L38.5,43.17 A5,5 0 0,1 46.21,38.97 Z" />
+        android:pathData="M42.75,42.0 Q42.75,37.0 47.05,39.55 L67.2,51.45 Q71.5,54.0 67.2,56.55 L47.05,68.45 Q42.75,71.0 42.75,66.0 Z" />
 </vector>

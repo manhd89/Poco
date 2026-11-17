@@ -14,12 +14,11 @@
         android:background="@drawable/bg_brand_logo">
 
         <ImageView
-            android:layout_width="16dp"
-            android:layout_height="16dp"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
             android:layout_gravity="center"
             android:contentDescription="@null"
-            android:src="@drawable/ic_play_arrow"
-            android:tint="@android:color/white" />
+            android:src="@drawable/ic_brand_play" />
     </FrameLayout>
 
     <TextView
@@ -31,20 +30,6 @@
         android:text="@string/brand_name"
         android:textColor="@color/pure_on_surface"
         android:textSize="22sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="6dp"
-        android:background="@drawable/bg_tonal_icon_box"
-        android:paddingStart="6dp"
-        android:paddingTop="2dp"
-        android:paddingEnd="6dp"
-        android:paddingBottom="2dp"
-        android:text="@string/home_region"
-        android:textColor="@color/pure_on_surface_variant"
-        android:textSize="10sp"
         android:textStyle="bold" />
 
     <Space

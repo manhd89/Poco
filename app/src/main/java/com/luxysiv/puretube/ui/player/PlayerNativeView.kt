@@ -13,6 +13,7 @@ import android.graphics.RectF
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import android.os.Bundle
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.Gravity
@@ -1143,6 +1144,7 @@ class PlayerNativeView @JvmOverloads constructor(
             lp.height = FrameLayout.LayoutParams.MATCH_PARENT
             detailsSheet.layoutParams = lp
         }
+        updateOpenSheetsLayout()
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -1450,7 +1452,7 @@ class PlayerNativeView @JvmOverloads constructor(
 
     private fun showCommentsSheet() {
         if (commentsDialog?.isShowing == true) return
-        val sheet = BottomSheetDialog(context)
+        val sheet = createSheet()
         val content = LayoutInflater.from(context)
             .inflate(R.layout.view_player_comments_sheet, null, false)
         val recycler = content.findViewById<RecyclerView>(R.id.comment_sheet_list).apply {
@@ -1532,29 +1534,48 @@ class PlayerNativeView @JvmOverloads constructor(
     private fun sheetTopOffsetPx(): Int =
         if (twoColumn) 0 else topInset + embeddedVideoHeightPx()
 
+    /** Tạo sheet có cấu hình cửa sổ trước lúc hiện để tránh giật vị trí ở chế độ 2 cột. */
+    private fun createSheet(): BottomSheetDialog =
+        AnchoredBottomSheetDialog(context) { dialog ->
+            configureSheetWindow(dialog)
+        }
+
     /**
      * Bố cục 2 cột: video nằm bên trái, nên sheet chỉ chiếm cột nội dung bên
-     * phải thay vì phủ toàn màn và che khung hình. Cấu hình lại cửa sổ ở
-     * [BottomSheetDialog.setOnShowListener] vì [BottomSheetDialog.onCreate] đặt
-     * lại `window.setLayout(MATCH_PARENT, MATCH_PARENT)` lúc show.
+     * phải thay vì phủ toàn màn và che khung hình. Áp dụng ngay trong
+     * [AnchoredBottomSheetDialog.onCreate] và [AnchoredBottomSheetDialog.onStart]
+     * trước khi WindowManager vẽ frame đầu tiên để tránh hiệu ứng sheet nhảy từ
+     * trái qua phải.
      */
     private fun configureSheetWindow(sheet: BottomSheetDialog) {
+        val window = sheet.window ?: return
         // Theme app đặt windowBackground đặc; phải thay bằng trong suốt thì bo
         // góc của nội dung mới lộ ra (nền cửa sổ vuông sẽ che các góc lại).
-        sheet.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        if (!twoColumn) return
+        window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        val lp = window.attributes
+        if (!twoColumn) {
+            lp.gravity = Gravity.FILL
+            lp.x = 0
+            lp.y = 0
+            lp.width = ViewGroup.LayoutParams.MATCH_PARENT
+            lp.height = ViewGroup.LayoutParams.MATCH_PARENT
+            window.attributes = lp
+            return
+        }
         val metrics = resources.displayMetrics
         val videoWidth = (metrics.widthPixels * 0.6f).toInt().coerceAtLeast(1)
         val contentWidth = (metrics.widthPixels - videoWidth).coerceAtLeast(1)
-        sheet.window?.apply {
-            val lp = attributes
-            lp.gravity = Gravity.TOP or Gravity.START
-            lp.width = contentWidth
-            lp.height = sheetWindowHeightPx()
-            lp.x = videoWidth
-            lp.y = topInset
-            attributes = lp
+        val windowHeight = sheetWindowHeightPx()
+        val windowLoc = IntArray(2)
+        if (isAttachedToWindow) {
+            getLocationOnScreen(windowLoc)
         }
+        lp.gravity = Gravity.TOP or Gravity.LEFT
+        lp.width = contentWidth
+        lp.height = windowHeight
+        lp.x = windowLoc[0] + videoWidth
+        lp.y = windowLoc[1] + topInset
+        window.attributes = lp
     }
 
     /**
@@ -1564,6 +1585,14 @@ class PlayerNativeView @JvmOverloads constructor(
      * chính vị trí đó, còn kéo xuống quá ngưỡng thì ẩn hẳn.
      */
     private fun configureSheet(sheet: BottomSheetDialog) {
+        applySheetBehaviorMetrics(sheet)
+        sheet.setOnShowListener {
+            configureSheetWindow(sheet)
+            sheet.behavior.state = BottomSheetBehavior.STATE_EXPANDED
+        }
+    }
+
+    private fun applySheetBehaviorMetrics(sheet: BottomSheetDialog) {
         val anchor = sheetTopOffsetPx()
         sheet.behavior.apply {
             isHideable = true
@@ -1575,9 +1604,29 @@ class PlayerNativeView @JvmOverloads constructor(
             expandedOffset = anchor
             state = BottomSheetBehavior.STATE_EXPANDED
         }
-        sheet.setOnShowListener {
-            configureSheetWindow(sheet)
-            sheet.behavior.state = BottomSheetBehavior.STATE_EXPANDED
+    }
+
+    private fun updateOpenSheetsLayout() {
+        listOfNotNull(commentsDialog, descriptionDialog, settingsDialog, mixDialog)
+            .filter { it.isShowing }
+            .forEach { dialog ->
+                configureSheetWindow(dialog)
+                applySheetBehaviorMetrics(dialog)
+            }
+    }
+
+    private class AnchoredBottomSheetDialog(
+        context: Context,
+        private val onConfigureWindow: (BottomSheetDialog) -> Unit
+    ) : BottomSheetDialog(context) {
+        override fun onCreate(savedInstanceState: Bundle?) {
+            super.onCreate(savedInstanceState)
+            onConfigureWindow(this)
+        }
+
+        override fun onStart() {
+            super.onStart()
+            onConfigureWindow(this)
         }
     }
 
@@ -1788,7 +1837,7 @@ class PlayerNativeView @JvmOverloads constructor(
     private fun showDescriptionSheet() {
         if (state.currentVideo == null) return
         descriptionDialog?.dismiss()
-        val sheet = BottomSheetDialog(context)
+        val sheet = createSheet()
         val content = LayoutInflater.from(context)
             .inflate(R.layout.view_player_description_sheet, null, false)
 
@@ -1949,7 +1998,7 @@ class PlayerNativeView @JvmOverloads constructor(
     private fun showMixSheet() {
         val sheetContent = queueSheetContent() ?: return
         mixDialog?.dismiss()
-        val sheet = BottomSheetDialog(context)
+        val sheet = createSheet()
         val scroll = ScrollView(context)
         val container = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
@@ -2081,7 +2130,7 @@ class PlayerNativeView @JvmOverloads constructor(
     private fun showPlayerSettings() {
         if (settingsDialog?.isShowing == true) return
         playerHud.setSettingsOpen(true)
-        val sheet = BottomSheetDialog(context)
+        val sheet = createSheet()
         val scroll = ScrollView(context)
         val container = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL

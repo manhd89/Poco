@@ -24,9 +24,8 @@
             android:layout_gravity="center"
             android:background="@drawable/bg_brand_logo"
             android:contentDescription="@string/nav_home"
-            android:padding="4dp"
-            android:src="@drawable/ic_play_arrow"
-            android:tint="@color/pure_on_primary" />
+            android:padding="3dp"
+            android:src="@drawable/ic_brand_play" />
     </FrameLayout>
 
     <LinearLayout

@@ -7,8 +7,8 @@
     <string name="nav_subscriptions">Đăng ký</string>
     <string name="nav_library">Bạn</string>
     <string name="nav_settings">Cài đặt</string>
-    <string name="brand_name">YouTube</string>
-    <string name="brand_footer">PureTube • giao diện YouTube</string>
+    <string name="brand_name">PureTube</string>
+    <string name="brand_footer">PureTube • trình phát video</string>
 
     <!-- Mini player -->
     <string name="mini_player_expand">Mở trình phát</string>
@@ -42,7 +42,6 @@
     <string name="backup_import_rollback">Không thể khôi phục dữ liệu, đã hoàn tác thay đổi</string>
 
     <!-- Trang chủ -->
-    <string name="home_region">VN</string>
     <string name="home_cast">Truyền phát</string>
     <string name="home_notifications">Thông báo</string>
     <string name="home_search">Tìm kiếm</string>
