@@ -490,16 +490,10 @@ abstract class PageActivity : AppCompatActivity() {
     private fun applyFullscreenUi(fullscreen: Boolean): Boolean {
         // Toàn màn hình chỉ có ý nghĩa khi trình phát đang mở.
         val effective = fullscreen && playerOpen
-        // Fullscreen luôn giữ dọc: cả nút trên HUD lẫn cú kéo tay cầm đều
-        // không tự động xoay máy. Khoá PORTRAIT thay vì để UNSPECIFIED để người
-        // dùng bật tự xoay lúc đang toàn màn cũng không đẩy video sang ngang.
-        val desiredOrientation = if (effective) {
-            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        } else {
-            ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-        }
-        if (requestedOrientation != desiredOrientation) {
-            requestedOrientation = desiredOrientation
+        // Không khoá hướng màn hình: trình phát luôn xoay tự do theo chiều
+        // màn hình hiện tại (kể cả khi đang bật toàn màn hình).
+        if (requestedOrientation != ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED) {
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
         }
         if (effective == lastFullscreen) return false
         lastFullscreen = effective
@@ -961,8 +955,8 @@ abstract class PageActivity : AppCompatActivity() {
         applyResponsiveLayout()
         ViewCompat.requestApplyInsets(pageRoot)
         ViewCompat.requestApplyInsets(playerOverlay)
-        // Fullscreen đã khoá dọc nên không còn trường hợp xoay ngang → dọc cần
-        // tự thoát. Mọi thay đổi cấu hình chỉ cần tính lại bố cục/inset.
+        // Trình phát xoay tự do theo màn hình nên cập nhật lại bố cục và inset
+        // mỗi khi kích thước hoặc hướng màn hình thay đổi.
         if (playerOpen) playerOverlay.onWindowConfigurationChanged()
     }
 

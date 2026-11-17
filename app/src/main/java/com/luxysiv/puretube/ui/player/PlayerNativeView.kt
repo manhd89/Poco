@@ -1029,7 +1029,8 @@ class PlayerNativeView @JvmOverloads constructor(
         // Video đã được đẩy xuống dưới thanh trạng thái ở chế độ thường nên HUD
         // không cần dịch thêm lần nữa; chỉ fullscreen/PiP mới dùng inset trực tiếp.
         val hudTop = if (state.isFullscreen || inPip) bars.top else 0
-        playerHud.applyWindowInsets(bars.left, hudTop, bars.right, hudBottom)
+        val hudRight = if (twoColumn) 0 else bars.right
+        playerHud.applyWindowInsets(bars.left, hudTop, hudRight, hudBottom)
     }
 
     private fun isTwoColumnLayout(widthPx: Int): Boolean {
