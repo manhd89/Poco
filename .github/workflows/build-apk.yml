@@ -1,4 +1,4 @@
-name: Build APK
+name: Build Debug APK
 
 on:
   push:
@@ -23,7 +23,7 @@ env:
 
 jobs:
   build:
-    name: Build test APK
+    name: Build Debug APK
     runs-on: ubuntu-24.04
     timeout-minutes: 40
 
@@ -59,74 +59,44 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # Tạo file môi trường .env rỗng để secrets-gradle-plugin không báo lỗi
-      - name: Prepare Environment Files
+      # Tạo file môi trường .env rỗng và khôi phục debug.keystore có sẵn từ repo
+      # để build Debug APK không cần tạo key ký hay khai báo GitHub Secrets.
+      - name: Prepare Environment and Debug Keystore
         run: |
           touch .env
           if [ ! -f .env.example ]; then
             touch .env.example
+          fi
+          if [ ! -f debug.keystore ] && [ -f debug.keystore.base64 ]; then
+            base64 --decode debug.keystore.base64 > debug.keystore
           fi
 
       # Chạy unit test JVM (hàng đợi, parser, SponsorBlock...) trước khi build APK.
       - name: Run unit tests
         run: ./gradlew testDebugUnitTest --stacktrace --no-daemon
 
-      # Giải mã keystore dùng để ký bản release từ GitHub Actions secrets.
-      # Nếu repo không có secrets (ví dụ PR từ fork), bước release sẽ bị bỏ qua
-      # thay vì làm fail cả workflow.
-      - name: Decode signing keystore
-        env:
-          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
-          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-        run: |
-          if [ -z "$KEYSTORE_BASE64" ] || [ -z "$STORE_PASSWORD" ] || [ -z "$KEY_PASSWORD" ]; then
-            echo "Không có signing secrets — bỏ qua bước ký release."
-            echo "HAS_SIGNING=false" >> "$GITHUB_ENV"
-            exit 0
-          fi
+      # Build Debug APK trực tiếp bằng debugConfig mặc định.
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug --stacktrace --no-daemon
 
-          KEYSTORE_PATH="$RUNNER_TEMP/puretube-upload.jks"
-          printf '%s' "$KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE_PATH"
-          chmod 600 "$KEYSTORE_PATH"
-
-          keytool -list -keystore "$KEYSTORE_PATH" -storepass "$STORE_PASSWORD" > /dev/null
-
-          {
-            echo "HAS_SIGNING=true"
-            echo "KEYSTORE_PATH=$KEYSTORE_PATH"
-            echo "STORE_PASSWORD=$STORE_PASSWORD"
-            echo "KEY_PASSWORD=$KEY_PASSWORD"
-            echo "KEY_ALIAS=${KEY_ALIAS:-upload}"
-          } >> "$GITHUB_ENV"
-
-          echo "Đã nạp keystore ký bản release."
-
-      # Chỉ build release khi có đủ signing secrets.
-      - name: Build Release APK
-        if: env.HAS_SIGNING == 'true'
-        run: ./gradlew assembleRelease --stacktrace --no-daemon
-
-      # Đính APK vào GitHub Pre-release thay vì Actions artifact.
+      # Đính Debug APK vào GitHub Pre-release thay vì Actions artifact.
       # Release asset KHÔNG tính vào quota Actions artifact (500 MB dùng chung
-      # toàn tài khoản GitHub Free) nên tránh được lỗi
-      # "Artifact storage quota has been hit".
-      # Chỉ chạy trên main (push hoặc workflow_dispatch), không chạy cho PR/tag.
-      - name: Publish Pre-release APK
-        if: env.HAS_SIGNING == 'true' && github.ref == 'refs/heads/main'
+      # toàn tài khoản GitHub Free).
+      # Chạy trên push/workflow_dispatch (không chạy cho PR hoặc tag).
+      - name: Publish Pre-release Debug APK
+        if: github.event_name != 'pull_request' && !startsWith(github.ref, 'refs/tags/v')
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           TAG="pre-release-latest"
-          APK_PATH=$(ls app/build/outputs/apk/release/*.apk 2>/dev/null | head -n 1)
+          APK_PATH=$(ls app/build/outputs/apk/debug/*.apk 2>/dev/null | head -n 1)
           if [ -z "$APK_PATH" ]; then
-            echo "Không tìm thấy APK release để đính kèm." >&2
+            echo "Không tìm thấy Debug APK để đính kèm." >&2
             exit 1
           fi
 
           # Đặt tên asset theo số lần chạy để dễ phân biệt các bản build.
-          ASSET="PureTube-${{ github.run_number }}.apk"
+          ASSET="PureTube-${{ github.run_number }}-debug.apk"
           cp "$APK_PATH" "$RUNNER_TEMP/$ASSET"
 
           # Xoá pre-release cũ kèm tag để luôn chỉ có một bản mới nhất.
@@ -135,30 +105,30 @@ jobs:
           gh release create "$TAG" "$RUNNER_TEMP/$ASSET" \
             --prerelease \
             --target "${{ github.sha }}" \
-            --title "PureTube pre-release build ${{ github.run_number }}" \
-            --notes "APK build tự động từ commit ${{ github.sha }}.
+            --title "PureTube Debug build ${{ github.run_number }}" \
+            --notes "Debug APK build tự động từ commit ${{ github.sha }}.
 
           - Nhánh: \`${{ github.ref_name }}\`
           - Workflow run: [#${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
 
           echo "Đã đăng pre-release: ${{ github.server_url }}/${{ github.repository }}/releases/tag/$TAG"
 
-      # Đẩy tag v2.x.y sẽ tạo release chính thức. Ghi chú lấy từ
+      # Đẩy tag v2.x.y sẽ tạo release chính thức với bản Debug APK. Ghi chú lấy từ
       # docs/releases/<tag>.md nếu có, ngược lại dùng changelog tự động của GitHub.
-      - name: Publish Tagged Release APK
-        if: env.HAS_SIGNING == 'true' && startsWith(github.ref, 'refs/tags/v')
+      - name: Publish Tagged Release Debug APK
+        if: startsWith(github.ref, 'refs/tags/v')
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           TAG="$GITHUB_REF_NAME"
           VERSION="${TAG#v}"
-          APK_PATH=$(ls app/build/outputs/apk/release/*.apk 2>/dev/null | head -n 1)
+          APK_PATH=$(ls app/build/outputs/apk/debug/*.apk 2>/dev/null | head -n 1)
           if [ -z "$APK_PATH" ]; then
-            echo "Không tìm thấy APK release để đính kèm." >&2
+            echo "Không tìm thấy Debug APK để đính kèm." >&2
             exit 1
           fi
 
-          ASSET="PureTube-$VERSION.apk"
+          ASSET="PureTube-$VERSION-debug.apk"
           cp "$APK_PATH" "$RUNNER_TEMP/$ASSET"
 
           # Chạy lại workflow trên cùng tag sẽ thay release cũ bằng bản mới.
@@ -167,11 +137,11 @@ jobs:
           NOTES_FILE="docs/releases/$TAG.md"
           if [ -f "$NOTES_FILE" ]; then
             gh release create "$TAG" "$RUNNER_TEMP/$ASSET" \
-              --title "PureTube $VERSION" \
+              --title "PureTube $VERSION (Debug)" \
               --notes-file "$NOTES_FILE"
           else
             gh release create "$TAG" "$RUNNER_TEMP/$ASSET" \
-              --title "PureTube $VERSION" \
+              --title "PureTube $VERSION (Debug)" \
               --generate-notes
           fi
 
