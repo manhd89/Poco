@@ -1,29 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Rail điều hướng cho màn hình medium (600–839dp). -->
+<!-- Rail điều hướng phẳng Android 16 cho màn hình medium (600–839dp). -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/pure_background"
+    android:background="@color/pure_surface"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:paddingTop="4dp"
-    android:paddingBottom="4dp">
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp">
 
     <FrameLayout
         android:id="@+id/rail_brand"
         android:layout_width="48dp"
         android:layout_height="48dp"
+        android:layout_marginBottom="8dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:clickable="true"
         android:focusable="true">
 
         <ImageView
-            android:layout_width="28dp"
-            android:layout_height="28dp"
+            android:layout_width="34dp"
+            android:layout_height="24dp"
             android:layout_gravity="center"
             android:background="@drawable/bg_brand_logo"
             android:contentDescription="@string/nav_home"
-            android:padding="5dp"
+            android:padding="4dp"
             android:src="@drawable/ic_play_arrow"
             android:tint="@color/pure_on_primary" />
     </FrameLayout>
@@ -36,17 +37,26 @@
         android:clickable="true"
         android:focusable="true"
         android:gravity="center"
+        android:minHeight="60dp"
         android:orientation="vertical"
-        android:paddingTop="14dp"
-        android:paddingBottom="14dp">
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp">
 
-        <ImageView
-            android:id="@+id/rail_nav_home_icon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:contentDescription="@null"
-            android:src="@drawable/ic_home"
-            android:tint="@color/pure_nav_unselected" />
+        <FrameLayout
+            android:id="@+id/rail_nav_home_pill"
+            android:layout_width="56dp"
+            android:layout_height="32dp"
+            android:background="@drawable/bg_nav_pill">
+
+            <ImageView
+                android:id="@+id/rail_nav_home_icon"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_home"
+                android:tint="@color/pure_nav_unselected" />
+        </FrameLayout>
 
         <TextView
             android:id="@+id/rail_nav_home_label"
@@ -57,28 +67,38 @@
             android:maxLines="1"
             android:text="@string/nav_home"
             android:textColor="@color/pure_nav_unselected"
-            android:textSize="10sp" />
+            android:textSize="11sp" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/rail_nav_subscriptions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:clickable="true"
         android:focusable="true"
         android:gravity="center"
+        android:minHeight="60dp"
         android:orientation="vertical"
-        android:paddingTop="14dp"
-        android:paddingBottom="14dp">
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp">
 
-        <ImageView
-            android:id="@+id/rail_nav_subscriptions_icon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:contentDescription="@null"
-            android:src="@drawable/ic_subscriptions"
-            android:tint="@color/pure_nav_unselected" />
+        <FrameLayout
+            android:id="@+id/rail_nav_subscriptions_pill"
+            android:layout_width="56dp"
+            android:layout_height="32dp"
+            android:background="@drawable/bg_nav_pill">
+
+            <ImageView
+                android:id="@+id/rail_nav_subscriptions_icon"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_subscriptions"
+                android:tint="@color/pure_nav_unselected" />
+        </FrameLayout>
 
         <TextView
             android:id="@+id/rail_nav_subscriptions_label"
@@ -89,28 +109,38 @@
             android:maxLines="1"
             android:text="@string/nav_subscriptions"
             android:textColor="@color/pure_nav_unselected"
-            android:textSize="10sp" />
+            android:textSize="11sp" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/rail_nav_library"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:clickable="true"
         android:focusable="true"
         android:gravity="center"
+        android:minHeight="60dp"
         android:orientation="vertical"
-        android:paddingTop="14dp"
-        android:paddingBottom="14dp">
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp">
 
-        <ImageView
-            android:id="@+id/rail_nav_library_icon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:contentDescription="@null"
-            android:src="@drawable/ic_account_circle"
-            android:tint="@color/pure_nav_unselected" />
+        <FrameLayout
+            android:id="@+id/rail_nav_library_pill"
+            android:layout_width="56dp"
+            android:layout_height="32dp"
+            android:background="@drawable/bg_nav_pill">
+
+            <ImageView
+                android:id="@+id/rail_nav_library_icon"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_account_circle"
+                android:tint="@color/pure_nav_unselected" />
+        </FrameLayout>
 
         <TextView
             android:id="@+id/rail_nav_library_label"
@@ -121,7 +151,7 @@
             android:maxLines="1"
             android:text="@string/nav_library"
             android:textColor="@color/pure_nav_unselected"
-            android:textSize="10sp" />
+            android:textSize="11sp" />
     </LinearLayout>
 
     <View
@@ -137,17 +167,26 @@
         android:clickable="true"
         android:focusable="true"
         android:gravity="center"
+        android:minHeight="60dp"
         android:orientation="vertical"
-        android:paddingTop="14dp"
-        android:paddingBottom="14dp">
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp">
 
-        <ImageView
-            android:id="@+id/rail_settings_icon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:contentDescription="@null"
-            android:src="@drawable/ic_settings"
-            android:tint="@color/pure_nav_unselected" />
+        <FrameLayout
+            android:id="@+id/rail_settings_pill"
+            android:layout_width="56dp"
+            android:layout_height="32dp"
+            android:background="@drawable/bg_nav_pill">
+
+            <ImageView
+                android:id="@+id/rail_settings_icon"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_gravity="center"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_settings"
+                android:tint="@color/pure_nav_unselected" />
+        </FrameLayout>
 
         <TextView
             android:id="@+id/rail_settings_label"
@@ -158,6 +197,6 @@
             android:maxLines="1"
             android:text="@string/nav_settings"
             android:textColor="@color/pure_nav_unselected"
-            android:textSize="10sp" />
+            android:textSize="11sp" />
     </LinearLayout>
 </LinearLayout>

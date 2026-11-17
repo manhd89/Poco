@@ -53,6 +53,7 @@ import com.luxysiv.puretube.ui.navigation.PageNavigator
 import com.luxysiv.puretube.ui.player.PlayerNativeView
 import com.luxysiv.puretube.ui.player.PlayerViewModel
 import com.luxysiv.puretube.ui.scaffold.MiniPlayerView
+import com.luxysiv.puretube.ui.views.applyBold
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
@@ -731,7 +732,8 @@ abstract class PageActivity : AppCompatActivity() {
         val rowId: Int,
         val iconId: Int,
         val labelId: Int,
-        val iconRes: Int
+        val iconRes: Int,
+        val pillId: Int = 0
     )
 
     private fun bottomNavItems(): List<NavItem> = listOf(
@@ -740,21 +742,24 @@ abstract class PageActivity : AppCompatActivity() {
             R.id.bottom_nav_home,
             R.id.bottom_nav_home_icon,
             R.id.bottom_nav_home_label,
-            R.drawable.ic_home
+            R.drawable.ic_home,
+            R.id.bottom_nav_home_pill
         ),
         NavItem(
             AppTab.SUBSCRIPTIONS,
             R.id.bottom_nav_subscriptions,
             R.id.bottom_nav_subscriptions_icon,
             R.id.bottom_nav_subscriptions_label,
-            R.drawable.ic_subscriptions
+            R.drawable.ic_subscriptions,
+            R.id.bottom_nav_subscriptions_pill
         ),
         NavItem(
             AppTab.LIBRARY,
             R.id.bottom_nav_library,
             R.id.bottom_nav_library_icon,
             R.id.bottom_nav_library_label,
-            R.drawable.ic_account_circle
+            R.drawable.ic_account_circle,
+            R.id.bottom_nav_library_pill
         )
     )
 
@@ -764,28 +769,32 @@ abstract class PageActivity : AppCompatActivity() {
             R.id.rail_nav_home,
             R.id.rail_nav_home_icon,
             R.id.rail_nav_home_label,
-            R.drawable.ic_home
+            R.drawable.ic_home,
+            R.id.rail_nav_home_pill
         ),
         NavItem(
             AppTab.SUBSCRIPTIONS,
             R.id.rail_nav_subscriptions,
             R.id.rail_nav_subscriptions_icon,
             R.id.rail_nav_subscriptions_label,
-            R.drawable.ic_subscriptions
+            R.drawable.ic_subscriptions,
+            R.id.rail_nav_subscriptions_pill
         ),
         NavItem(
             AppTab.LIBRARY,
             R.id.rail_nav_library,
             R.id.rail_nav_library_icon,
             R.id.rail_nav_library_label,
-            R.drawable.ic_account_circle
+            R.drawable.ic_account_circle,
+            R.id.rail_nav_library_pill
         ),
         NavItem(
             AppTab.SETTINGS,
             R.id.rail_settings,
             R.id.rail_settings_icon,
             R.id.rail_settings_label,
-            R.drawable.ic_settings
+            R.drawable.ic_settings,
+            R.id.rail_settings_pill
         )
     )
 
@@ -845,14 +854,25 @@ abstract class PageActivity : AppCompatActivity() {
     }
 
     private fun applyNavVisual(item: NavItem, selected: Boolean, drawerRow: Boolean) {
-        val color = ContextCompat.getColor(
+        val iconColor = ContextCompat.getColor(
+            this,
+            if (selected) R.color.pure_nav_pill_icon else R.color.pure_nav_unselected
+        )
+        val labelColor = ContextCompat.getColor(
             this,
             if (selected) R.color.pure_nav_selected else R.color.pure_nav_unselected
         )
         val icon = findViewById<ImageView>(item.iconId)
         icon.setImageResource(item.iconRes)
-        ImageViewCompat.setImageTintList(icon, ColorStateList.valueOf(color))
-        findViewById<TextView>(item.labelId).setTextColor(color)
+        ImageViewCompat.setImageTintList(icon, ColorStateList.valueOf(iconColor))
+        val label = findViewById<TextView>(item.labelId)
+        label.setTextColor(labelColor)
+        label.applyBold(selected)
+        if (item.pillId != 0) {
+            findViewById<View>(item.pillId).setBackgroundResource(
+                if (selected) R.drawable.bg_nav_pill_selected else R.drawable.bg_nav_pill
+            )
+        }
         if (drawerRow) {
             findViewById<View>(item.rowId).setBackgroundResource(
                 if (selected) R.drawable.bg_nav_item_selected else R.drawable.bg_nav_item

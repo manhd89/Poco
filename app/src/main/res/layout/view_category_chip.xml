@@ -5,10 +5,12 @@
     android:background="@drawable/bg_chip"
     android:clickable="true"
     android:focusable="true"
+    android:gravity="center"
     android:maxLines="1"
-    android:paddingStart="12dp"
-    android:paddingTop="6dp"
-    android:paddingEnd="12dp"
-    android:paddingBottom="6dp"
+    android:minHeight="36dp"
+    android:paddingStart="16dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="8dp"
     android:textColor="@color/pure_on_surface"
-    android:textSize="14sp" />
+    android:textSize="13sp" />

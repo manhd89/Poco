@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
     Cửa sổ duy nhất của app: trang nội dung + mini player nằm trong [page_root],
-    còn trình phát là một overlay phủ lên TRONG CÙNG cửa sổ. Nhờ vậy khi thu nhỏ
-    trang xem, trang bên dưới là chính các View thật (không phải ảnh chụp) nên
-    không bị lệch/giật ở thời điểm bàn giao.
+    còn trình phát là một overlay phủ lên TRONG CÙNG cửa sổ.
 -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/player_window_root"
@@ -18,11 +16,12 @@
         android:background="@color/pure_background"
         android:orientation="horizontal">
 
-        <!-- Rail (medium) hoặc drawer (expanded) bên trái. -->
+        <!-- Rail (medium) hoặc drawer (expanded) bên trái, kèm đường chia 1dp phẳng. -->
         <FrameLayout
             android:id="@+id/page_side_nav"
             android:layout_width="@dimen/page_rail_width"
             android:layout_height="match_parent"
+            android:background="@color/pure_surface"
             android:visibility="gone">
 
             <include
@@ -37,12 +36,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:visibility="gone" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="end"
+                android:background="@color/pure_outline_variant" />
         </FrameLayout>
 
         <!--
             Dùng match_parent + weight (không dùng 0dp) để LinearLayout không đo
-            lượt đầu với kích thước UNSPECIFIED; nội dung trang cần biên rõ ràng
-            để các thành phần cuộn ngang/dọc hoạt động đúng.
+            lượt đầu với kích thước UNSPECIFIED.
         -->
         <LinearLayout
             android:id="@+id/page_main"
@@ -72,10 +76,6 @@
         </LinearLayout>
     </LinearLayout>
 
-    <!--
-        Trình phát overlay: cùng cửa sổ với trang nội dung nên thu nhỏ chỉ là
-        animate view này về khung mini player; trang bên dưới không đổi.
-    -->
     <com.luxysiv.puretube.ui.player.PlayerNativeView
         android:id="@+id/page_player_overlay"
         android:layout_width="match_parent"

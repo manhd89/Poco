@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <!-- Chạm vào tiêu đề mở sheet giới thiệu (thay cho card mô tả cũ). -->
+    <!-- Chạm vào tiêu đề mở sheet giới thiệu. -->
     <TextView
         android:id="@+id/player_info_title"
         android:layout_width="match_parent"
@@ -14,33 +14,36 @@
         android:clickable="true"
         android:ellipsize="end"
         android:focusable="true"
-        android:fontFamily="sans-serif-medium"
+        android:fontFamily="@font/plus_jakarta_sans"
         android:lineSpacingExtra="4dp"
         android:maxLines="3"
-        android:paddingTop="2dp"
-        android:paddingBottom="2dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
         android:textColor="@color/pure_on_surface"
-        android:textSize="18sp" />
+        android:textSize="19sp"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/player_info_meta"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
+        android:layout_marginTop="4dp"
         android:textColor="@color/pure_on_surface_variant"
-        android:textSize="14sp" />
+        android:textSize="13sp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
+        android:background="@drawable/bg_settings_card"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:padding="12dp">
 
         <com.luxysiv.puretube.ui.views.ChannelAvatarView
             android:id="@+id/player_info_avatar"
-            android:layout_width="36dp"
-            android:layout_height="36dp" />
+            android:layout_width="40dp"
+            android:layout_height="40dp" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -54,15 +57,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
-                android:fontFamily="sans-serif-medium"
+                android:fontFamily="@font/plus_jakarta_sans"
                 android:maxLines="1"
                 android:textColor="@color/pure_on_surface"
-                android:textSize="16sp" />
+                android:textSize="15sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/player_info_subscribers"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:textColor="@color/pure_on_surface_variant"
@@ -72,16 +77,20 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/player_info_subscribe"
             android:layout_width="wrap_content"
-            android:layout_height="36dp"
+            android:layout_height="40dp"
             android:layout_marginStart="8dp"
             android:backgroundTint="@color/pure_on_surface"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
             android:minWidth="0dp"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
             android:text="@string/player_subscribe"
             android:textAllCaps="false"
             android:textColor="@color/pure_surface"
-            app:cornerRadius="18dp" />
+            android:textSize="13sp"
+            app:cornerRadius="20dp"
+            app:elevation="0dp" />
     </LinearLayout>
 
     <HorizontalScrollView
@@ -99,14 +108,14 @@
             <LinearLayout
                 android:id="@+id/player_info_like"
                 android:layout_width="wrap_content"
-                android:layout_height="36dp"
+                android:layout_height="40dp"
                 android:background="@drawable/bg_player_pill"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingStart="12dp"
-                android:paddingEnd="14dp">
+                android:paddingStart="14dp"
+                android:paddingEnd="16dp">
 
                 <ImageView
                     android:id="@+id/player_info_like_icon"
@@ -121,17 +130,17 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="6dp"
-                    android:fontFamily="sans-serif-medium"
                     android:maxLines="1"
                     android:text="@string/player_like"
                     android:textColor="@color/pure_on_surface"
-                    android:textSize="14sp" />
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/player_info_dislike"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_marginStart="8dp"
                 android:background="@drawable/bg_player_pill"
                 android:clickable="true"
@@ -150,15 +159,15 @@
             <LinearLayout
                 android:id="@+id/player_info_share"
                 android:layout_width="wrap_content"
-                android:layout_height="36dp"
+                android:layout_height="40dp"
                 android:layout_marginStart="8dp"
                 android:background="@drawable/bg_player_pill"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingStart="12dp"
-                android:paddingEnd="14dp">
+                android:paddingStart="14dp"
+                android:paddingEnd="16dp">
 
                 <ImageView
                     android:layout_width="18dp"
@@ -171,25 +180,25 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="6dp"
-                    android:fontFamily="sans-serif-medium"
                     android:maxLines="1"
                     android:text="@string/player_share"
                     android:textColor="@color/pure_on_surface"
-                    android:textSize="14sp" />
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/player_info_save"
                 android:layout_width="wrap_content"
-                android:layout_height="36dp"
+                android:layout_height="40dp"
                 android:layout_marginStart="8dp"
                 android:background="@drawable/bg_player_pill"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingStart="12dp"
-                android:paddingEnd="14dp">
+                android:paddingStart="14dp"
+                android:paddingEnd="16dp">
 
                 <ImageView
                     android:id="@+id/player_info_save_icon"
@@ -204,25 +213,25 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="6dp"
-                    android:fontFamily="sans-serif-medium"
                     android:maxLines="1"
                     android:text="@string/player_save"
                     android:textColor="@color/pure_on_surface"
-                    android:textSize="14sp" />
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/player_info_background"
                 android:layout_width="wrap_content"
-                android:layout_height="36dp"
+                android:layout_height="40dp"
                 android:layout_marginStart="8dp"
                 android:background="@drawable/bg_player_pill"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingStart="12dp"
-                android:paddingEnd="14dp">
+                android:paddingStart="14dp"
+                android:paddingEnd="16dp">
 
                 <ImageView
                     android:id="@+id/player_info_background_icon"
@@ -236,25 +245,25 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="6dp"
-                    android:fontFamily="sans-serif-medium"
                     android:maxLines="1"
                     android:text="@string/player_background_play"
                     android:textColor="@color/pure_on_surface"
-                    android:textSize="14sp" />
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/player_info_timer"
                 android:layout_width="wrap_content"
-                android:layout_height="36dp"
+                android:layout_height="40dp"
                 android:layout_marginStart="8dp"
                 android:background="@drawable/bg_player_pill"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingStart="12dp"
-                android:paddingEnd="14dp">
+                android:paddingStart="14dp"
+                android:paddingEnd="16dp">
 
                 <ImageView
                     android:id="@+id/player_info_timer_icon"
@@ -269,11 +278,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="6dp"
-                    android:fontFamily="sans-serif-medium"
                     android:maxLines="1"
                     android:text="@string/player_sleep_timer"
                     android:textColor="@color/pure_on_surface"
-                    android:textSize="14sp" />
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
             </LinearLayout>
         </LinearLayout>
     </HorizontalScrollView>

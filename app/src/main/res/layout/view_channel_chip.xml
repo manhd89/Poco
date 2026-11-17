@@ -6,11 +6,12 @@
     android:clickable="true"
     android:focusable="true"
     android:gravity="center_vertical"
+    android:minHeight="36dp"
     android:orientation="horizontal"
     android:paddingStart="6dp"
-    android:paddingTop="4dp"
-    android:paddingEnd="12dp"
-    android:paddingBottom="4dp">
+    android:paddingTop="5dp"
+    android:paddingEnd="14dp"
+    android:paddingBottom="5dp">
 
     <com.luxysiv.puretube.ui.views.ChannelAvatarView
         android:id="@+id/channel_chip_avatar"
@@ -25,5 +26,5 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:textColor="@color/pure_on_surface"
-        android:textSize="14sp" />
+        android:textSize="13sp" />
 </LinearLayout>

@@ -64,6 +64,7 @@ import com.luxysiv.puretube.ui.views.ChannelAvatarView
 import com.luxysiv.puretube.ui.views.CompactVideoCardView
 import com.luxysiv.puretube.ui.views.MixCoverView
 import com.luxysiv.puretube.ui.views.videoCardActions
+import com.luxysiv.puretube.ui.views.applyBold
 import com.luxysiv.puretube.ui.views.dp
 import com.luxysiv.puretube.ui.views.shareVideo
 import com.luxysiv.puretube.util.Formatters
@@ -966,18 +967,18 @@ class PlayerNativeView @JvmOverloads constructor(
         // Mini player nằm trên thanh điều hướng ở bố cục compact, còn bố cục
         // rộng đặt nó sát đáy sau rail/drawer bên trái.
         val bottomMargin = if (compact) {
-            dp(56f) + dp(1f) + dp(6f) + dp(2f) + dp(5.5f)
+            dp(64f) + dp(1f) + dp(6f) + dp(3f) + dp(5f)
         } else {
-            dp(6f) + dp(2f) + dp(5.5f)
+            dp(6f) + dp(3f) + dp(5f)
         }
         val sideNavWidth = when {
             compact -> 0f
-            widthDp < 840f -> dp(80f)
-            else -> dp(240f)
+            widthDp < 840f -> dp(84f)
+            else -> dp(248f)
         }
-        val width = dp(84f)
-        val height = dp(47f)
-        val left = (bars?.left ?: 0) + sideNavWidth + dp(16f) - location[0]
+        val width = dp(86f)
+        val height = dp(48f)
+        val left = (bars?.left ?: 0) + sideNavWidth + dp(18f) - location[0]
         val bottom = metrics.heightPixels - bottomInset - bottomMargin - location[1]
         return RectF(left, bottom - height, left + width, bottom)
     }
@@ -1077,6 +1078,24 @@ class PlayerNativeView @JvmOverloads constructor(
         // điều khiển không chồng lên nhau.
         playerHud.setCompactMode(!fullscreen && !inPip)
 
+        detailsHeader.visibility = if (!fullscreen && !inPip && twoColumn) View.GONE else View.VISIBLE
+        if (!fullscreen && !inPip) {
+            if (twoColumn) {
+                detailsContainer.setPadding(
+                    context.dp(20f),
+                    context.dp(16f),
+                    context.dp(20f),
+                    context.dp(32f)
+                )
+            } else {
+                detailsContainer.setPadding(
+                    context.dp(16f),
+                    context.dp(4f),
+                    context.dp(16f),
+                    context.dp(32f)
+                )
+            }
+        }
         if (fullscreen || inPip) {
             videoContainer.layoutParams = FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.MATCH_PARENT,
@@ -1586,10 +1605,7 @@ class PlayerNativeView @JvmOverloads constructor(
                 if (selected) R.color.pure_surface else R.color.pure_on_surface
             )
         )
-        chip.typeface = Typeface.create(
-            Typeface.DEFAULT,
-            if (selected) Typeface.BOLD else Typeface.NORMAL
-        )
+        chip.applyBold(selected)
     }
 
     private fun bindCommentsSheetHeader() {

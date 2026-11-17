@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -282,10 +283,13 @@ class HomeAdapter(
 
         init {
             title.setTextColor(ContextCompat.getColor(context, R.color.pure_on_surface))
-            title.setTextSize(22f)
-            title.typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-            val padding = (8 * context.resources.displayMetrics.density).toInt()
-            title.setPadding(0, padding, 0, padding)
+            title.textSize = 20f
+            title.typeface = Typeface.create(
+                ResourcesCompat.getFont(context, R.font.plus_jakarta_sans) ?: Typeface.DEFAULT,
+                Typeface.BOLD
+            )
+            val density = context.resources.displayMetrics.density
+            title.setPadding(0, (6 * density).toInt(), 0, (2 * density).toInt())
             title.layoutParams = RecyclerView.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT

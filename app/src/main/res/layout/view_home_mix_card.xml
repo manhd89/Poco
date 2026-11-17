@@ -10,10 +10,11 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:ellipsize="end"
-        android:fontFamily="sans-serif-medium"
+        android:fontFamily="@font/plus_jakarta_sans"
         android:maxLines="2"
         android:textColor="@color/pure_on_surface"
-        android:textSize="14sp" />
+        android:textSize="14sp"
+        android:textStyle="bold" />
     <TextView
         android:id="@+id/mix_subtitle"
         android:layout_width="match_parent"

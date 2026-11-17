@@ -2,6 +2,7 @@ package com.luxysiv.puretube.ui.playlist
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
@@ -67,6 +68,11 @@ class PlaylistActivity : PageActivity() {
         super.onCreate(savedInstanceState)
         observePlaylistState()
         resumeFromHistoryIfNeeded()
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        playlistView.updateLayoutMetrics()
     }
 
     private fun observePlaylistState() {

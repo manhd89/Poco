@@ -2,7 +2,7 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
     <com.luxysiv.puretube.ui.views.AspectRatioFrameLayout
         android:id="@+id/card_thumbnail_container"
-        android:layout_width="128dp"
+        android:layout_width="144dp"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_video_thumb"
         android:clipToOutline="true">
@@ -21,12 +21,12 @@
             android:layout_gravity="bottom|end"
             android:layout_margin="6dp"
             android:background="@drawable/bg_duration"
-            android:paddingStart="4dp"
+            android:paddingStart="5dp"
             android:paddingTop="1dp"
-            android:paddingEnd="4dp"
+            android:paddingEnd="5dp"
             android:paddingBottom="1dp"
             android:textColor="@android:color/white"
-            android:textSize="12sp"
+            android:textSize="11sp"
             android:textStyle="bold" />
         <ProgressBar
             android:id="@+id/card_progress"
@@ -43,7 +43,7 @@
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="14dp"
         android:layout_weight="1"
         android:orientation="vertical">
 
@@ -51,14 +51,14 @@
             android:id="@+id/card_now_playing"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="2dp"
-            android:background="@drawable/bg_chip"
-            android:paddingStart="6dp"
-            android:paddingTop="1dp"
-            android:paddingEnd="6dp"
-            android:paddingBottom="1dp"
+            android:layout_marginBottom="4dp"
+            android:background="@drawable/bg_now_playing_pill"
+            android:paddingStart="8dp"
+            android:paddingTop="2dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="2dp"
             android:text="@string/player_now_playing"
-            android:textColor="@color/pure_tertiary"
+            android:textColor="@color/pure_on_primary_container"
             android:textSize="10sp"
             android:textStyle="bold"
             android:visibility="gone" />
@@ -66,6 +66,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="top"
             android:orientation="horizontal">
             <TextView
                 android:id="@+id/card_title"
@@ -73,17 +74,21 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ellipsize="end"
-                android:fontFamily="sans-serif-medium"
+                android:fontFamily="@font/plus_jakarta_sans"
+                android:lineSpacingExtra="1dp"
                 android:maxLines="2"
                 android:textColor="@color/pure_on_surface"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:textStyle="bold" />
             <ImageButton
                 android:id="@+id/card_menu"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginTop="-8dp"
+                android:layout_marginEnd="-12dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/video_options"
-                android:padding="7dp"
+                android:padding="13dp"
                 android:scaleType="centerInside"
                 android:src="@drawable/ic_more_vert"
                 android:tint="@color/pure_on_surface_variant" />
@@ -93,7 +98,7 @@
             android:id="@+id/card_channel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="3dp"
             android:ellipsize="end"
             android:maxLines="1"
             android:textColor="@color/pure_on_surface_variant"

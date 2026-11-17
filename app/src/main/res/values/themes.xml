@@ -2,21 +2,39 @@
 <resources>
 
     <!--
-        Theme XML dùng chung cho giao diện View. Các màu được khai báo trong
-        values/colors.xml và values-night/colors.xml, nhờ vậy giao diện sáng/tối
-        giữ được cùng một bảng màu trên toàn ứng dụng.
+        Theme XML phẳng Android 16 / Material 3 dùng chung trên toàn ứng dụng.
+        Kết hợp Inter cho thân văn bản và Plus Jakarta Sans cho tiêu đề.
     -->
     <style name="Theme.MyApplication" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/pure_primary</item>
         <item name="colorOnPrimary">@color/pure_on_primary</item>
+        <item name="colorPrimaryContainer">@color/pure_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/pure_on_primary_container</item>
+        <item name="colorTertiary">@color/pure_tertiary</item>
         <item name="colorSurface">@color/pure_surface</item>
         <item name="colorOnSurface">@color/pure_on_surface</item>
         <item name="colorSurfaceVariant">@color/pure_surface_variant</item>
         <item name="colorOnSurfaceVariant">@color/pure_on_surface_variant</item>
+        <item name="colorSurfaceContainer">@color/pure_surface_container</item>
+        <item name="colorSurfaceContainerHigh">@color/pure_surface_container_high</item>
+        <item name="colorSurfaceContainerHighest">@color/pure_surface_container_highest</item>
         <item name="colorOutlineVariant">@color/pure_outline_variant</item>
         <item name="android:colorBackground">@color/pure_background</item>
         <item name="android:windowBackground">@color/pure_background</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.PureTube.AlertDialog</item>
+    </style>
+
+    <style name="ThemeOverlay.PureTube.AlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="colorSurface">@color/pure_surface</item>
+        <item name="colorSurfaceContainerHigh">@color/pure_surface</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.PureTube.Dialog</item>
+    </style>
+
+    <style name="ShapeAppearance.PureTube.Dialog" parent="ShapeAppearance.Material3.Corner.ExtraLarge">
+        <item name="cornerSize">24dp</item>
     </style>
 </resources>

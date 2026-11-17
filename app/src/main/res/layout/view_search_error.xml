@@ -13,9 +13,10 @@
         android:id="@+id/search_error_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:fontFamily="@font/plus_jakarta_sans"
         android:text="@string/search_error_title"
         android:textColor="@color/pure_on_surface"
-        android:textSize="16sp"
+        android:textSize="17sp"
         android:textStyle="bold" />
 
     <TextView
@@ -24,6 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
         android:gravity="center"
+        android:maxWidth="360dp"
         android:text="@string/search_error_message"
         android:textColor="@color/pure_on_surface_variant"
         android:textSize="14sp" />
@@ -33,12 +35,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:background="?attr/selectableItemBackground"
+        android:background="@drawable/bg_chip"
         android:clickable="true"
         android:focusable="true"
-        android:padding="12dp"
+        android:gravity="center"
+        android:minHeight="48dp"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
         android:text="@string/action_retry"
-        android:textColor="@color/pure_tertiary"
+        android:textColor="@color/pure_primary"
         android:textSize="14sp"
         android:textStyle="bold" />
 </LinearLayout>

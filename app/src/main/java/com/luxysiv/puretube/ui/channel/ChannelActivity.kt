@@ -2,6 +2,7 @@ package com.luxysiv.puretube.ui.channel
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
@@ -54,6 +55,11 @@ class ChannelActivity : PageActivity() {
             viewModel.start(channelId, channelTitle)
         }
         observeState(channelTitle)
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        channelView.updateLayoutMetrics()
     }
 
     private fun observeState(fallbackTitle: String) {

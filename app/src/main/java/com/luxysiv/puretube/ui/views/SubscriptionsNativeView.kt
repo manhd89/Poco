@@ -13,6 +13,7 @@ import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -317,10 +318,7 @@ class SubscriptionsNativeView @JvmOverloads constructor(
                     if (isSelected) R.color.pure_surface else R.color.pure_on_surface
                 )
             )
-            holder.label.typeface = Typeface.create(
-                Typeface.DEFAULT,
-                if (isSelected) Typeface.BOLD else Typeface.NORMAL
-            )
+            holder.label.applyBold(isSelected)
             val startPadding = context.dp(if (position == 0) 12f else 6f)
             chip.setPaddingRelative(
                 startPadding,
@@ -380,7 +378,10 @@ class SubscriptionsNativeView @JvmOverloads constructor(
             text = context.getString(R.string.subscriptions_manage_title)
             setTextColor(ContextCompat.getColor(context, R.color.pure_on_surface))
             textSize = 18f
-            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+            typeface = Typeface.create(
+                ResourcesCompat.getFont(context, R.font.plus_jakarta_sans) ?: Typeface.DEFAULT,
+                Typeface.BOLD
+            )
         }
         container.addView(title)
 
@@ -465,8 +466,10 @@ class SubscriptionsNativeView @JvmOverloads constructor(
                 text = context.getString(R.string.subscriptions_unsubscribe)
                 setTextColor(ContextCompat.getColor(context, R.color.pure_primary))
                 textSize = 13f
-                typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
-                setPadding(context.dp(8f), context.dp(8f), context.dp(8f), context.dp(8f))
+                applyBold(true)
+                minHeight = context.dp(48f)
+                gravity = Gravity.CENTER_VERTICAL
+                setPadding(context.dp(12f), 0, context.dp(8f), 0)
                 isClickable = true
                 isFocusable = true
                 setOnClickListener { onUnsubscribe?.invoke(channel.channelId) }

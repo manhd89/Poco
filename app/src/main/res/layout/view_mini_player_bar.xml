@@ -1,23 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    Mini player native. Khung video chỉ là container rỗng; PlayerSurfaceHost
-    di chuyển surface Media3 dùng chung vào/ra khỏi đây nên không có texture
-    thứ hai và không bị đen khi Activity phía sau nhả surface.
+    Mini player phẳng Android 16: không đổ bóng, bo góc 16dp, viền hairline 1dp.
 -->
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="8dp"
+    android:layout_marginStart="10dp"
     android:layout_marginTop="6dp"
-    android:layout_marginEnd="8dp"
+    android:layout_marginEnd="10dp"
     android:layout_marginBottom="6dp"
     app:cardBackgroundColor="@color/pure_mini_player_surface"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="@dimen/mini_player_elevation"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="0dp"
     app:cardPreventCornerOverlap="false"
     app:strokeColor="@color/pure_mini_player_stroke"
-    app:strokeWidth="0.5dp">
+    app:strokeWidth="1dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -27,7 +25,7 @@
         <LinearLayout
             android:id="@+id/mini_player_row"
             android:layout_width="match_parent"
-            android:layout_height="58dp"
+            android:layout_height="62dp"
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
             android:focusable="true"
@@ -37,12 +35,11 @@
             android:paddingEnd="4dp">
 
             <FrameLayout
-                android:layout_width="84dp"
-                android:layout_height="47dp"
+                android:layout_width="86dp"
+                android:layout_height="48dp"
                 android:background="@drawable/bg_video_thumb"
                 android:clipToOutline="true">
 
-                <!-- Surface Media3 dùng chung được host di chuyển vào đây. -->
                 <FrameLayout
                     android:id="@+id/mini_player_video_container"
                     android:layout_width="match_parent"
@@ -72,15 +69,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
-                    android:fontFamily="sans-serif-medium"
+                    android:fontFamily="@font/plus_jakarta_sans"
                     android:maxLines="1"
                     android:textColor="@color/pure_on_surface"
-                    android:textSize="14sp" />
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/mini_player_channel"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:textColor="@color/pure_on_surface_variant"
@@ -89,38 +88,38 @@
 
             <ImageButton
                 android:id="@+id/mini_player_play_pause"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/mini_player_pause"
-                android:padding="8dp"
+                android:padding="10dp"
                 android:src="@drawable/ic_pause"
                 android:tint="@color/pure_on_surface" />
 
             <ImageButton
                 android:id="@+id/mini_player_next"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/mini_player_next"
-                android:padding="8dp"
+                android:padding="10dp"
                 android:src="@drawable/ic_skip_next"
                 android:tint="@color/pure_on_surface" />
 
             <ImageButton
                 android:id="@+id/mini_player_close"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/mini_player_close"
-                android:padding="9dp"
+                android:padding="11dp"
                 android:src="@drawable/ic_close"
                 android:tint="@color/pure_on_surface" />
         </LinearLayout>
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="2dp"
+            android:layout_height="3dp"
             android:background="@color/pure_progress_track">
 
             <View

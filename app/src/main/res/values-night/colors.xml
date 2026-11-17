@@ -1,28 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Bảng màu XML khớp với BrandDarkScheme trong ui/theme/Color.kt. -->
-    <color name="pure_primary">#FFFF0000</color>
+    <!-- Bảng màu phẳng Android 16 / Material 3 tối (Obsidian Slate). -->
+    <color name="pure_primary">#FFFF4740</color>
     <color name="pure_on_primary">#FFFFFFFF</color>
+    <color name="pure_primary_container">#FF3B181A</color>
+    <color name="pure_on_primary_container">#FFFF8A85</color>
 
-    <color name="pure_background">#FF0F0F0F</color>
-    <color name="pure_surface">#FF0F0F0F</color>
-    <color name="pure_surface_variant">#FF272727</color>
-    <color name="pure_surface_container">#FF181818</color>
-    <color name="pure_surface_container_high">#FF212121</color>
-    <color name="pure_surface_container_highest">#FF272727</color>
-    <color name="pure_tertiary">#FF3EA6FF</color>
+    <color name="pure_background">#FF0E1015</color>
+    <color name="pure_surface">#FF151820</color>
+    <color name="pure_surface_variant">#FF222734</color>
+    <color name="pure_surface_container">#FF191D26</color>
+    <color name="pure_surface_container_high">#FF212632</color>
+    <color name="pure_surface_container_highest">#FF2A303E</color>
+    <color name="pure_tertiary">#FF6CB6FF</color>
 
-    <color name="pure_on_background">#FFF1F1F1</color>
-    <color name="pure_on_surface">#FFF1F1F1</color>
-    <color name="pure_on_surface_variant">#FFAAAAAA</color>
-    <color name="pure_outline_variant">#FF3F3F3F</color>
+    <color name="pure_on_background">#FFF2F4F8</color>
+    <color name="pure_on_surface">#FFF2F4F8</color>
+    <color name="pure_on_surface_variant">#FF9CA4B5</color>
+    <color name="pure_outline_variant">#FF282D3A</color>
 
-    <color name="pure_nav_selected">#FFF1F1F1</color>
-    <color name="pure_nav_unselected">#FFAAAAAA</color>
-    <color name="pure_nav_selected_bg">#FF212121</color>
+    <color name="pure_nav_selected">#FFF2F4F8</color>
+    <color name="pure_nav_unselected">#FF949CAE</color>
+    <color name="pure_nav_selected_bg">#FF232835</color>
+    <color name="pure_nav_pill_bg">#FF3B1A1C</color>
+    <color name="pure_nav_pill_icon">#FFFF6B66</color>
 
-    <color name="pure_mini_player_surface">#FF212121</color>
-    <color name="pure_mini_player_stroke">#8C3F3F3F</color>
-    <color name="pure_progress_track">#24F1F1F1</color>
-    <color name="pure_progress_fill">#FFFF0000</color>
+    <color name="pure_mini_player_surface">#FF191D26</color>
+    <color name="pure_mini_player_stroke">#FF2B3140</color>
+    <color name="pure_progress_track">#29F2F4F8</color>
+    <color name="pure_progress_fill">#FFFF4740</color>
 </resources>

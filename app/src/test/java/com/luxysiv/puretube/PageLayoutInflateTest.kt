@@ -97,4 +97,29 @@ class PageLayoutInflateTest {
     )
     assertNotNull(view)
   }
+
+  @Test
+  fun `redesigned native pages inflate cleanly on phone and tablet widths`() {
+    val context = ApplicationProvider.getApplicationContext<Context>()
+    val themed = ContextThemeWrapper(context, R.style.Theme_MyApplication)
+    assertNotNull(com.luxysiv.puretube.ui.views.ChannelNativeView(themed))
+    assertNotNull(com.luxysiv.puretube.ui.views.SearchNativeView(themed))
+    assertNotNull(com.luxysiv.puretube.ui.views.SettingsNativeView(themed))
+    assertNotNull(com.luxysiv.puretube.ui.views.SubscriptionsNativeView(themed))
+    assertNotNull(com.luxysiv.puretube.ui.views.HomeNativeView(themed))
+  }
+
+  @Test
+  @Config(sdk = [36], qualifiers = "w900dp-h700dp")
+  fun `tablet layout metrics apply cleanly on expanded screen`() {
+    val context = ApplicationProvider.getApplicationContext<Context>()
+    val themed = ContextThemeWrapper(context, R.style.Theme_MyApplication)
+    assertNotNull(LayoutInflater.from(themed).inflate(R.layout.activity_page, null))
+    assertNotNull(com.luxysiv.puretube.ui.views.HomeNativeView(themed))
+    assertNotNull(com.luxysiv.puretube.ui.views.ChannelNativeView(themed))
+    assertNotNull(com.luxysiv.puretube.ui.views.PlaylistNativeView(themed))
+    assertNotNull(com.luxysiv.puretube.ui.views.LibraryNativeView(themed))
+    assertNotNull(com.luxysiv.puretube.ui.views.SearchNativeView(themed))
+    assertNotNull(com.luxysiv.puretube.ui.views.SettingsNativeView(themed))
+  }
 }

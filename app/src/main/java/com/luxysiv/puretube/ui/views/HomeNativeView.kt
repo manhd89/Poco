@@ -1,7 +1,6 @@
 package com.luxysiv.puretube.ui.views
 
 import android.content.Context
-import android.graphics.Typeface
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -45,8 +44,6 @@ class HomeNativeView @JvmOverloads constructor(
     private val tabForYou: LinearLayout
     private val tabTrendingLabel: TextView
     private val tabForYouLabel: TextView
-    private val tabTrendingIndicator: View
-    private val tabForYouIndicator: View
 
     private val categoryList: RecyclerView
     private val trendingRefresh: SwipeRefreshLayout
@@ -112,8 +109,6 @@ class HomeNativeView @JvmOverloads constructor(
         tabForYou = findViewById(R.id.home_tab_for_you)
         tabTrendingLabel = findViewById(R.id.home_tab_trending_label)
         tabForYouLabel = findViewById(R.id.home_tab_for_you_label)
-        tabTrendingIndicator = findViewById(R.id.home_tab_trending_indicator)
-        tabForYouIndicator = findViewById(R.id.home_tab_for_you_indicator)
 
         categoryList = findViewById(R.id.home_category_list)
         trendingRefresh = findViewById(R.id.home_trending_refresh)
@@ -416,11 +411,19 @@ class HomeNativeView @JvmOverloads constructor(
             forYouList.adapter = forYouAdapter
         }
 
-        trendingList.setPadding(newPadding, 0, newPadding, context.dp(32f))
+        if (trendingList.itemDecorationCount == 0) {
+            trendingList.addItemDecoration(SpacingItemDecoration(context.dp(16f)))
+        }
+        if (forYouList.itemDecorationCount == 0) {
+            forYouList.addItemDecoration(SpacingItemDecoration(context.dp(16f)))
+        }
+
+        val gridEdgePadding = newPadding - context.dp(8f)
+        trendingList.setPadding(gridEdgePadding, 0, gridEdgePadding, context.dp(32f))
         forYouList.setPadding(
-            newPadding,
-            context.dp(8f),
-            newPadding,
+            gridEdgePadding,
+            context.dp(4f),
+            gridEdgePadding,
             context.dp(32f)
         )
 
@@ -448,22 +451,23 @@ class HomeNativeView @JvmOverloads constructor(
         forYouRefresh.visibility = if (trending) View.GONE else View.VISIBLE
         categoryList.visibility = if (trending) View.VISIBLE else View.GONE
 
-        styleTab(tabTrendingLabel, tabTrendingIndicator, trending)
-        styleTab(tabForYouLabel, tabForYouIndicator, !trending)
+        styleTab(tabTrending, tabTrendingLabel, trending)
+        styleTab(tabForYou, tabForYouLabel, !trending)
     }
 
-    private fun styleTab(label: TextView, indicator: View, selected: Boolean) {
+    private fun styleTab(tab: LinearLayout, label: TextView, selected: Boolean) {
+        if (selected) {
+            tab.setBackgroundResource(R.drawable.bg_segmented_tab_selected)
+        } else {
+            tab.background = null
+        }
         label.setTextColor(
             ContextCompat.getColor(
                 context,
                 if (selected) R.color.pure_on_surface else R.color.pure_on_surface_variant
             )
         )
-        label.typeface = Typeface.create(
-            Typeface.DEFAULT,
-            if (selected) Typeface.BOLD else Typeface.NORMAL
-        )
-        indicator.visibility = if (selected) View.VISIBLE else View.INVISIBLE
+        label.applyBold(selected)
     }
 
     // ------------------------------------------------------------------
@@ -494,10 +498,7 @@ class HomeNativeView @JvmOverloads constructor(
                     if (selected) R.color.pure_surface else R.color.pure_on_surface
                 )
             )
-            chip.typeface = Typeface.create(
-                Typeface.DEFAULT,
-                if (selected) Typeface.BOLD else Typeface.NORMAL
-            )
+            chip.applyBold(selected)
             chip.setOnClickListener {
                 val oldCategory = selectedCategory
                 if (oldCategory == category) return@setOnClickListener

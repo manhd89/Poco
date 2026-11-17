@@ -1,7 +1,6 @@
 package com.luxysiv.puretube.ui.views
 
 import android.content.Context
-import android.graphics.Typeface
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +11,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.luxysiv.puretube.R
@@ -47,6 +47,7 @@ class LibraryNativeView @JvmOverloads constructor(
     private var savedPlaylistIds: Set<String> = emptySet()
     private var watchLater: List<VideoEntity> = emptyList()
     private var selectedTabIndex = 0
+    private var columns = 1
 
     private var actions: VideoCardActions? = null
 
@@ -68,8 +69,8 @@ class LibraryNativeView @JvmOverloads constructor(
         clearHistoryButton = findViewById(R.id.library_clear_history)
         list = findViewById(R.id.library_list)
 
-        list.layoutManager = LinearLayoutManager(context)
         list.adapter = adapter
+        updateLayoutMetrics()
 
         clearHistoryButton.setOnClickListener { onClearHistory?.invoke() }
         findViewById<ImageButton>(R.id.library_search).setOnClickListener {
@@ -78,6 +79,28 @@ class LibraryNativeView @JvmOverloads constructor(
         findViewById<ImageButton>(R.id.library_settings).setOnClickListener {
             onOpenSettings?.invoke()
         }
+    }
+
+    fun updateLayoutMetrics() {
+        val widthDp = resources.configuration.screenWidthDp
+        val compact = widthDp < 600
+        val newColumns = if (widthDp >= 720) 2 else 1
+        val padding = context.dp(if (compact) 16f else 24f)
+
+        if (newColumns != columns || list.layoutManager == null) {
+            columns = newColumns
+            val manager = GridLayoutManager(context, columns)
+            manager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                override fun getSpanSize(position: Int): Int =
+                    if (adapter.isFullSpan(position)) columns else 1
+            }
+            list.layoutManager = manager
+        }
+        if (list.itemDecorationCount == 0) {
+            list.addItemDecoration(SpacingItemDecoration(context.dp(12f)))
+        }
+        val edge = padding - context.dp(6f)
+        list.setPadding(edge, context.dp(8f), edge, context.dp(32f))
     }
 
     // ------------------------------------------------------------------
@@ -270,6 +293,13 @@ class LibraryNativeView @JvmOverloads constructor(
             diff.dispatchUpdatesTo(this)
         }
 
+        fun isFullSpan(position: Int): Boolean = when (rows.getOrNull(position)) {
+            is LibraryRow.Video,
+            is LibraryRow.Playlist,
+            is LibraryRow.SavedPlaylist -> false
+            else -> true
+        }
+
         override fun getItemCount(): Int = rows.size
 
         override fun getItemViewType(position: Int): Int = when (rows[position]) {
@@ -321,12 +351,7 @@ class LibraryNativeView @JvmOverloads constructor(
                     val currentActions = actions ?: return
                     val video = row.entity.toVideoItem()
                     val card = (holder as VideoHolder).card
-                    card.setPadding(
-                        context.dp(16f),
-                        context.dp(8f),
-                        context.dp(16f),
-                        context.dp(8f)
-                    )
+                    card.setPadding(0, context.dp(4f), 0, context.dp(4f))
                     card.bind(
                         video = video,
                         isFavorite = row.entity.isFavorite,
@@ -339,12 +364,7 @@ class LibraryNativeView @JvmOverloads constructor(
                 is LibraryRow.Empty -> (holder as EmptyHolder).bind(row.tabIndex)
                 is LibraryRow.Playlist -> {
                     val card = (holder as PlaylistHolder).card
-                    card.setPadding(
-                        context.dp(16f),
-                        context.dp(8f),
-                        context.dp(16f),
-                        context.dp(8f)
-                    )
+                    card.setPadding(0, context.dp(4f), 0, context.dp(4f))
                     val item = row.entity.toPlaylistItem()
                     card.bind(
                         playlist = item,
@@ -356,12 +376,7 @@ class LibraryNativeView @JvmOverloads constructor(
 
                 is LibraryRow.SavedPlaylist -> {
                     val card = (holder as PlaylistHolder).card
-                    card.setPadding(
-                        context.dp(16f),
-                        context.dp(8f),
-                        context.dp(16f),
-                        context.dp(8f)
-                    )
+                    card.setPadding(0, context.dp(4f), 0, context.dp(4f))
                     val item = row.entity.toPlaylistItem()
                     card.bind(
                         playlist = item,
@@ -436,10 +451,7 @@ class LibraryNativeView @JvmOverloads constructor(
                     if (selected) R.color.pure_surface else R.color.pure_on_surface
                 )
             )
-            chip.typeface = Typeface.create(
-                Typeface.DEFAULT,
-                if (selected) Typeface.BOLD else Typeface.NORMAL
-            )
+            chip.applyBold(selected)
             val params = chip.layoutParams as ViewGroup.MarginLayoutParams
             params.marginEnd = context.dp(8f)
             chip.layoutParams = params

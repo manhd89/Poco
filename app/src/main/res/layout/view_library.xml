@@ -7,30 +7,32 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="60dp"
+        android:background="@color/pure_surface"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingStart="16dp"
-        android:paddingEnd="4dp">
+        android:paddingEnd="8dp">
 
         <TextView
             android:id="@+id/library_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:fontFamily="sans-serif-medium"
+            android:fontFamily="@font/plus_jakarta_sans"
             android:text="@string/library_title"
             android:textColor="@color/pure_on_surface"
-            android:textSize="24sp"
+            android:textSize="22sp"
             android:textStyle="bold" />
 
         <ImageButton
             android:id="@+id/library_clear_history"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/bg_circle_tonal_48"
             android:contentDescription="@string/library_clear_history"
-            android:padding="8dp"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:padding="13dp"
             android:scaleType="centerInside"
             android:src="@drawable/ic_delete_sweep"
             android:tint="@color/pure_on_surface"
@@ -38,26 +40,35 @@
 
         <ImageButton
             android:id="@+id/library_search"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="4dp"
+            android:background="@drawable/bg_circle_tonal_48"
             android:contentDescription="@string/home_search"
-            android:padding="8dp"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:padding="13dp"
             android:scaleType="centerInside"
             android:src="@drawable/ic_search"
             android:tint="@color/pure_on_surface" />
 
         <ImageButton
             android:id="@+id/library_settings"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="4dp"
+            android:background="@drawable/bg_circle_tonal_48"
             android:contentDescription="@string/nav_settings"
-            android:padding="8dp"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:padding="13dp"
             android:scaleType="centerInside"
             android:src="@drawable/ic_settings"
             android:tint="@color/pure_on_surface" />
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/pure_outline_variant" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/library_list"
@@ -65,5 +76,6 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:clipToPadding="false"
+        android:paddingTop="8dp"
         android:paddingBottom="32dp" />
 </LinearLayout>

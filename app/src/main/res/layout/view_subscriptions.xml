@@ -7,55 +7,53 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="60dp"
+        android:background="@color/pure_surface"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingStart="16dp"
-        android:paddingEnd="4dp">
+        android:paddingEnd="8dp">
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:fontFamily="sans-serif-medium"
+            android:fontFamily="@font/plus_jakarta_sans"
             android:text="@string/subscriptions_title"
             android:textColor="@color/pure_on_surface"
-            android:textSize="24sp"
+            android:textSize="22sp"
             android:textStyle="bold" />
 
         <ImageButton
             android:id="@+id/subscriptions_manage"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/bg_circle_tonal_48"
             android:contentDescription="@string/subscriptions_manage"
-            android:padding="8dp"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:padding="13dp"
             android:scaleType="centerInside"
             android:src="@drawable/ic_more_vert"
             android:tint="@color/pure_on_surface" />
 
         <ImageButton
             android:id="@+id/subscriptions_search"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="4dp"
+            android:background="@drawable/bg_circle_tonal_48"
             android:contentDescription="@string/home_search"
-            android:padding="8dp"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:padding="13dp"
             android:scaleType="centerInside"
             android:src="@drawable/ic_search"
             android:tint="@color/pure_on_surface" />
-
-        <TextView
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/bg_avatar_red"
-            android:gravity="center"
-            android:text="@string/home_avatar_letter"
-            android:textColor="@android:color/white"
-            android:textSize="14sp" />
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/pure_outline_variant" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/subscriptions_channels"
@@ -64,7 +62,7 @@
         android:clipToPadding="false"
         android:orientation="horizontal"
         android:paddingStart="16dp"
-        android:paddingTop="8dp"
+        android:paddingTop="10dp"
         android:paddingEnd="16dp"
         android:paddingBottom="8dp" />
 

@@ -25,15 +25,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:fontFamily="sans-serif-medium"
+            android:fontFamily="@font/plus_jakarta_sans"
             android:textColor="@color/pure_on_surface"
-            android:textSize="14sp" />
+            android:textSize="15sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
+        android:lineSpacingExtra="2dp"
         android:text="@string/settings_about_description"
         android:textColor="@color/pure_on_surface_variant"
         android:textSize="14sp" />
@@ -48,26 +50,30 @@
             android:id="@+id/settings_source_button"
             style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="5dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="6dp"
             android:layout_weight="1"
             android:ellipsize="end"
             android:maxLines="1"
             android:text="@string/settings_source"
             android:textAllCaps="false"
+            app:cornerRadius="100dp"
             app:icon="@drawable/ic_code"
-            app:iconSize="17dp" />
+            app:iconSize="17dp"
+            app:strokeColor="@color/pure_outline_variant" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/settings_license_button"
             style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="6dp"
             android:layout_weight="1"
             android:ellipsize="end"
             android:maxLines="1"
             android:text="@string/settings_license"
-            android:textAllCaps="false" />
+            android:textAllCaps="false"
+            app:cornerRadius="100dp"
+            app:strokeColor="@color/pure_outline_variant" />
     </LinearLayout>
 </LinearLayout>

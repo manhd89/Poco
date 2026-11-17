@@ -7,35 +7,38 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="64dp"
+        android:background="@color/pure_surface"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingStart="4dp"
-        android:paddingEnd="12dp">
+        android:paddingStart="6dp"
+        android:paddingEnd="14dp">
 
         <ImageButton
             android:id="@+id/search_back"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/search_back"
-            android:padding="8dp"
+            android:padding="12dp"
             android:scaleType="centerInside"
             android:src="@drawable/ic_arrow_back"
             android:tint="@color/pure_on_surface" />
 
         <LinearLayout
             android:layout_width="0dp"
-            android:layout_height="40dp"
+            android:layout_height="44dp"
+            android:layout_marginStart="4dp"
             android:layout_weight="1"
             android:background="@drawable/bg_search_field"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingStart="12dp">
+            android:paddingStart="14dp"
+            android:paddingEnd="4dp">
 
             <ImageView
-                android:layout_width="20dp"
-                android:layout_height="20dp"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
                 android:contentDescription="@null"
                 android:src="@drawable/ic_search"
                 android:tint="@color/pure_on_surface_variant" />
@@ -44,7 +47,7 @@
                 android:id="@+id/search_input"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="10dp"
                 android:layout_weight="1"
                 android:background="@null"
                 android:hint="@string/search_hint"
@@ -57,15 +60,15 @@
                 android:paddingBottom="0dp"
                 android:textColor="@color/pure_on_surface"
                 android:textColorHint="@color/pure_on_surface_variant"
-                android:textSize="16sp" />
+                android:textSize="15sp" />
 
             <ImageButton
                 android:id="@+id/search_clear"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/search_clear"
-                android:padding="8dp"
+                android:padding="12dp"
                 android:scaleType="centerInside"
                 android:src="@drawable/ic_close"
                 android:tint="@color/pure_on_surface_variant"
@@ -73,16 +76,21 @@
 
             <ImageButton
                 android:id="@+id/search_mic"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/search_voice"
-                android:padding="9dp"
+                android:padding="11dp"
                 android:scaleType="centerInside"
                 android:src="@drawable/ic_mic"
                 android:tint="@color/pure_on_surface" />
         </LinearLayout>
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/pure_outline_variant" />
 
     <FrameLayout
         android:layout_width="match_parent"

@@ -1,5 +1,6 @@
 package com.luxysiv.puretube.ui.library
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
@@ -131,6 +132,11 @@ class LibraryActivity : PageActivity() {
         if (::libraryView.isInitialized) {
             libraryView.selectTab(savedInstanceState.getInt(KEY_SELECTED_TAB, 0))
         }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        if (::libraryView.isInitialized) libraryView.updateLayoutMetrics()
     }
 
     private companion object {

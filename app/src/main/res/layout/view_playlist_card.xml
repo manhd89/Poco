@@ -2,7 +2,7 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android">
     <com.luxysiv.puretube.ui.views.AspectRatioFrameLayout
         android:id="@+id/playlist_thumbnail_container"
-        android:layout_width="128dp"
+        android:layout_width="144dp"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_video_thumb"
         android:clipToOutline="true">
@@ -23,7 +23,7 @@
             android:background="@drawable/bg_duration"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingStart="5dp"
+            android:paddingStart="6dp"
             android:paddingTop="2dp"
             android:paddingEnd="6dp"
             android:paddingBottom="2dp">
@@ -47,7 +47,7 @@
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="14dp"
         android:layout_weight="1"
         android:orientation="vertical">
 
@@ -56,16 +56,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:fontFamily="sans-serif-medium"
+            android:fontFamily="@font/plus_jakarta_sans"
+            android:lineSpacingExtra="1dp"
             android:maxLines="2"
             android:textColor="@color/pure_on_surface"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/playlist_channel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="4dp"
             android:ellipsize="end"
             android:maxLines="1"
             android:textColor="@color/pure_on_surface_variant"

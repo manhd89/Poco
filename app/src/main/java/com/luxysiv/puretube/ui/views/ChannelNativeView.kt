@@ -1,6 +1,7 @@
 package com.luxysiv.puretube.ui.views
 
 import android.content.Context
+import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -10,12 +11,14 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.luxysiv.puretube.R
 import com.luxysiv.puretube.data.model.ChannelPage
 import com.luxysiv.puretube.data.model.VideoItem
 import com.luxysiv.puretube.error.AppError
+import com.luxysiv.puretube.ui.adaptive.videoGridColumnsForWidth
 import com.luxysiv.puretube.util.presentation
 
 class ChannelNativeView @JvmOverloads constructor(
@@ -25,6 +28,7 @@ class ChannelNativeView @JvmOverloads constructor(
 ) : LinearLayout(context, attrs, defStyleAttr) {
 
     private val backButton: ImageButton
+    private val headerCard: View
     private val avatar: ChannelAvatarView
     private val nameView: TextView
     private val subsView: TextView
@@ -38,6 +42,7 @@ class ChannelNativeView @JvmOverloads constructor(
     private val emptyView: TextView
 
     private val adapter = VideoAdapter()
+    private var columns = 1
 
     private var videos: List<VideoItem> = emptyList()
     private var isLoading = false
@@ -70,6 +75,7 @@ class ChannelNativeView @JvmOverloads constructor(
         LayoutInflater.from(context).inflate(R.layout.view_channel_page, this, true)
 
         backButton = findViewById(R.id.channel_back)
+        headerCard = findViewById(R.id.channel_page_header_card)
         avatar = findViewById(R.id.channel_page_avatar)
         nameView = findViewById(R.id.channel_page_name)
         subsView = findViewById(R.id.channel_page_subs)
@@ -82,8 +88,22 @@ class ChannelNativeView @JvmOverloads constructor(
         retryButton = findViewById(R.id.channel_page_retry)
         emptyView = findViewById(R.id.channel_page_empty)
 
-        list.layoutManager = LinearLayoutManager(context)
-        list.adapter = adapter
+        list.addItemDecoration(object : RecyclerView.ItemDecoration() {
+            override fun getItemOffsets(
+                outRect: Rect,
+                view: View,
+                parent: RecyclerView,
+                state: RecyclerView.State
+            ) {
+                if (columns > 1) {
+                    val half = context.dp(8f)
+                    outRect.set(half, half, half, half)
+                } else {
+                    outRect.set(0, 0, 0, 0)
+                }
+            }
+        })
+        updateLayoutMetrics()
         list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (dy <= 0 || !hasMore || isLoading || isLoadingMore) return
@@ -95,6 +115,34 @@ class ChannelNativeView @JvmOverloads constructor(
 
         backButton.setOnClickListener { onBack?.invoke() }
         retryButton.setOnClickListener { onRetry?.invoke() }
+    }
+
+    fun updateLayoutMetrics() {
+        val widthDp = resources.configuration.screenWidthDp
+        val compact = widthDp < 600
+        val newColumns = videoGridColumnsForWidth(widthDp)
+        val edge = context.dp(if (compact) 16f else 24f)
+
+        (headerCard.layoutParams as? MarginLayoutParams)?.let { lp ->
+            if (lp.marginStart != edge || lp.marginEnd != edge) {
+                lp.marginStart = edge
+                lp.marginEnd = edge
+                headerCard.layoutParams = lp
+            }
+        }
+
+        if (newColumns != columns || list.layoutManager == null) {
+            columns = newColumns
+            list.layoutManager = GridLayoutManager(context, columns)
+            list.adapter = adapter
+        }
+
+        if (columns > 1) {
+            val gridEdge = edge - context.dp(8f)
+            list.setPadding(gridEdge, context.dp(4f), gridEdge, context.dp(24f))
+        } else {
+            list.setPadding(edge, context.dp(4f), edge, context.dp(24f))
+        }
     }
 
     fun setChannel(page: ChannelPage?, fallbackTitle: String = "") {
@@ -144,7 +192,7 @@ class ChannelNativeView @JvmOverloads constructor(
         }
     }
 
-    private inner class VideoAdapter : RecyclerView.Adapter<VideoHolder>() {
+    private inner class VideoAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         private var rows: List<VideoItem> = emptyList()
 
         fun submit(newRows: List<VideoItem>) {
@@ -163,27 +211,53 @@ class ChannelNativeView @JvmOverloads constructor(
 
         override fun getItemCount(): Int = rows.size
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VideoHolder {
-            val card = CompactVideoCardView(parent.context)
-            card.layoutParams = RecyclerView.LayoutParams(
+        override fun getItemViewType(position: Int): Int =
+            if (columns > 1) TYPE_GRID else TYPE_COMPACT
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+            val params = RecyclerView.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
-            return VideoHolder(card)
+            return if (viewType == TYPE_GRID) {
+                val card = VideoCardView(parent.context).apply { layoutParams = params }
+                GridVideoHolder(card)
+            } else {
+                val card = CompactVideoCardView(parent.context).apply { layoutParams = params }
+                CompactVideoHolder(card)
+            }
         }
 
-        override fun onBindViewHolder(holder: VideoHolder, position: Int) {
+        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             val video = rows[position]
-            holder.card.bind(
-                video = video,
-                isFavorite = favoriteIds.contains(video.id),
-                isWatchLater = watchLaterIds.contains(video.id),
-                progressFraction = watchProgress[video.id] ?: 0f,
-                showSnippet = false,
-                actions = actions
-            )
+            val fav = favoriteIds.contains(video.id)
+            val wl = watchLaterIds.contains(video.id)
+            val progress = watchProgress[video.id] ?: 0f
+            when (holder) {
+                is GridVideoHolder -> holder.card.bind(
+                    video = video,
+                    isFavorite = fav,
+                    isWatchLater = wl,
+                    progressFraction = progress,
+                    actions = actions
+                )
+                is CompactVideoHolder -> holder.card.bind(
+                    video = video,
+                    isFavorite = fav,
+                    isWatchLater = wl,
+                    progressFraction = progress,
+                    showSnippet = false,
+                    actions = actions
+                )
+            }
         }
     }
 
-    private class VideoHolder(val card: CompactVideoCardView) : RecyclerView.ViewHolder(card)
+    private class GridVideoHolder(val card: VideoCardView) : RecyclerView.ViewHolder(card)
+    private class CompactVideoHolder(val card: CompactVideoCardView) : RecyclerView.ViewHolder(card)
+
+    private companion object {
+        const val TYPE_COMPACT = 0
+        const val TYPE_GRID = 1
+    }
 }

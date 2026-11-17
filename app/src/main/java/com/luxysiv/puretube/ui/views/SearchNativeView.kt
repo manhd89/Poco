@@ -1,6 +1,7 @@
 package com.luxysiv.puretube.ui.views
 
 import android.content.Context
+import android.graphics.Rect
 import android.graphics.Typeface
 import android.text.Editable
 import android.text.SpannableString
@@ -21,7 +22,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.luxysiv.puretube.R
 import com.luxysiv.puretube.data.model.PlaylistItem
@@ -67,6 +68,7 @@ class SearchNativeView @JvmOverloads constructor(
     private var savedPlaylistIds: Set<String> = emptySet()
     private var watchProgress: Map<String, Float> = emptyMap()
     private var sortIndex = 0
+    private var columns = 1
 
     private var suppressTextWatcher = false
     private var actions: VideoCardActions? = null
@@ -94,8 +96,9 @@ class SearchNativeView @JvmOverloads constructor(
         loading = findViewById(R.id.search_loading)
         list = findViewById(R.id.search_list)
 
-        list.layoutManager = LinearLayoutManager(context)
         list.adapter = adapter
+        list.addItemDecoration(SearchResultDecoration())
+        updateLayoutMetrics()
 
         backButton.setOnClickListener { onBackClick?.invoke() }
         clearButton.setOnClickListener {
@@ -128,6 +131,24 @@ class SearchNativeView @JvmOverloads constructor(
         }
 
         clearButton.visibility = View.GONE
+    }
+
+    fun updateLayoutMetrics() {
+        val widthDp = resources.configuration.screenWidthDp
+        val compact = widthDp < 600
+        val newColumns = if (widthDp >= 840) 2 else 1
+
+        if (newColumns != columns || list.layoutManager == null) {
+            columns = newColumns
+            val manager = GridLayoutManager(context, columns)
+            manager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                override fun getSpanSize(position: Int): Int =
+                    if (adapter.isFullSpan(position)) columns else 1
+            }
+            list.layoutManager = manager
+        }
+        val extraHorizontal = if (compact) 0 else context.dp(8f)
+        list.setPadding(extraHorizontal, 0, extraHorizontal, context.dp(24f))
     }
 
     // ------------------------------------------------------------------
@@ -260,13 +281,6 @@ class SearchNativeView @JvmOverloads constructor(
             else -> buildResultRows()
         }
 
-        val resultState = !isSearching && query.isNotBlank() && isShowingResults
-        list.setPadding(
-            if (resultState) context.dp(16f) else 0,
-            0,
-            if (resultState) context.dp(16f) else 0,
-            0
-        )
         adapter.submit(rows, this)
     }
 
@@ -450,6 +464,11 @@ class SearchNativeView @JvmOverloads constructor(
             diff.dispatchUpdatesTo(this)
         }
 
+        fun isFullSpan(position: Int): Boolean = when (rows.getOrNull(position)) {
+            is SearchRow.Video, is SearchRow.Playlist -> false
+            else -> true
+        }
+
         override fun getItemCount(): Int = rows.size
 
         override fun getItemViewType(position: Int): Int = when (rows[position]) {
@@ -600,10 +619,36 @@ class SearchNativeView @JvmOverloads constructor(
                     if (selected) R.color.pure_surface else R.color.pure_on_surface
                 )
             )
-            chip.typeface = Typeface.create(
-                Typeface.DEFAULT,
-                if (selected) Typeface.BOLD else Typeface.NORMAL
-            )
+            chip.applyBold(selected)
+        }
+    }
+
+    private inner class SearchResultDecoration : RecyclerView.ItemDecoration() {
+        override fun getItemOffsets(
+            outRect: Rect,
+            view: View,
+            parent: RecyclerView,
+            state: RecyclerView.State
+        ) {
+            val position = parent.getChildAdapterPosition(view)
+            if (position == RecyclerView.NO_POSITION || adapter.isFullSpan(position)) {
+                outRect.set(0, 0, 0, 0)
+                return
+            }
+            val outer = context.dp(16f)
+            if (columns <= 1) {
+                outRect.set(outer, 0, outer, 0)
+            } else {
+                val halfGap = context.dp(8f)
+                val lp = view.layoutParams as? GridLayoutManager.LayoutParams
+                val spanIndex = lp?.spanIndex ?: 0
+                outRect.set(
+                    if (spanIndex == 0) outer else halfGap,
+                    0,
+                    if (spanIndex == columns - 1) outer else halfGap,
+                    0
+                )
+            }
         }
     }
 

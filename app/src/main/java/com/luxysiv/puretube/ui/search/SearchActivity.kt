@@ -2,6 +2,7 @@ package com.luxysiv.puretube.ui.search
 
 import android.app.Activity
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.speech.RecognizerIntent
 import android.view.View
@@ -89,6 +90,11 @@ class SearchActivity : PageActivity() {
         if (query.isNotBlank() && ::searchView.isInitialized && !searchView.hasActiveSearch()) {
             searchView.submitText(query)
         }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        if (::searchView.isInitialized) searchView.updateLayoutMetrics()
     }
 
     private fun launchVoiceSearch() {

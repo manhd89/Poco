@@ -99,15 +99,13 @@ class CompactVideoCardView @JvmOverloads constructor(
         this.actions = actions
 
         val configuration = resources.configuration
-        val thumbnailWidth = when {
-            configuration.screenWidthDp >= 600 &&
-                configuration.screenWidthDp > configuration.screenHeightDp -> 196
-            configuration.screenWidthDp >= 600 -> 188
-            else -> 128
-        }
+        val thumbnailWidth = if (configuration.screenWidthDp >= 600) 144 else 128
         val params = thumbnailContainer.layoutParams
-        params.width = context.dp(thumbnailWidth.toFloat())
-        thumbnailContainer.layoutParams = params
+        val targetWidth = context.dp(thumbnailWidth.toFloat())
+        if (params.width != targetWidth) {
+            params.width = targetWidth
+            thumbnailContainer.layoutParams = params
+        }
 
         titleView.text = video.title
         nowPlayingView.visibility = if (isCurrent) View.VISIBLE else View.GONE

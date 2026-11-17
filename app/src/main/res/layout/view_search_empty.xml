@@ -9,21 +9,29 @@
     android:paddingEnd="32dp"
     android:paddingBottom="64dp">
 
-    <ImageView
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:contentDescription="@null"
-        android:src="@drawable/ic_search"
-        android:tint="@color/pure_on_surface_variant" />
+    <FrameLayout
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:background="@drawable/bg_circle_tonal">
+
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_search"
+            android:tint="@color/pure_on_surface_variant" />
+    </FrameLayout>
 
     <TextView
         android:id="@+id/search_empty_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:fontFamily="@font/plus_jakarta_sans"
         android:gravity="center"
         android:textColor="@color/pure_on_surface"
-        android:textSize="16sp"
+        android:textSize="17sp"
         android:textStyle="bold" />
 
     <TextView
@@ -32,6 +40,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
         android:gravity="center"
+        android:maxWidth="340dp"
         android:text="@string/search_no_results_hint"
         android:textColor="@color/pure_on_surface_variant"
         android:textSize="14sp" />

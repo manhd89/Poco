@@ -170,12 +170,12 @@ class SettingsNativeView @JvmOverloads constructor(
             list.layoutManager = manager
         }
         if (list.itemDecorationCount == 0) {
-            list.addItemDecoration(SpacingItemDecoration(context.dp(2f)))
+            list.addItemDecoration(SpacingItemDecoration(context.dp(8f)))
         }
         list.setPadding(
-            padding - context.dp(8f),
-            0,
-            padding - context.dp(8f),
+            padding - context.dp(4f),
+            context.dp(4f),
+            padding - context.dp(4f),
             context.dp(40f)
         )
         adapter.notifyDataSetChanged()
