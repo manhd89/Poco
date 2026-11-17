@@ -59,16 +59,29 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # Tạo file môi trường .env rỗng và khôi phục debug.keystore có sẵn từ repo
-      # để build Debug APK không cần tạo key ký hay khai báo GitHub Secrets.
+      # Tạo file môi trường .env rỗng và đảm bảo debug.keystore tồn tại ở root
+      # để :app:validateSigningDebug luôn chạy được mà người dùng không phải tự tạo key hay secrets.
       - name: Prepare Environment and Debug Keystore
         run: |
           touch .env
           if [ ! -f .env.example ]; then
             touch .env.example
           fi
-          if [ ! -f debug.keystore ] && [ -f debug.keystore.base64 ]; then
-            base64 --decode debug.keystore.base64 > debug.keystore
+          if [ ! -f debug.keystore ]; then
+            if [ -f debug.keystore.base64 ]; then
+              base64 --decode debug.keystore.base64 > debug.keystore
+            else
+              keytool -genkeypair -noprompt \
+                -keystore debug.keystore \
+                -storetype PKCS12 \
+                -storepass android \
+                -alias androiddebugkey \
+                -keypass android \
+                -keyalg RSA \
+                -keysize 2048 \
+                -validity 10000 \
+                -dname "CN=Android Debug,O=Android,C=US"
+            fi
           fi
 
       # Chạy unit test JVM (hàng đợi, parser, SponsorBlock...) trước khi build APK.
