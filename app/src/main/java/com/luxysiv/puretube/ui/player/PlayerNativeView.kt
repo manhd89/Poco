@@ -71,6 +71,7 @@ import com.luxysiv.puretube.ui.views.shareVideo
 import com.luxysiv.puretube.util.Formatters
 import com.luxysiv.puretube.util.userMessage
 import kotlin.math.abs
+import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
 /**
@@ -208,20 +209,26 @@ class PlayerNativeView @JvmOverloads constructor(
     private var minimizeSpring: SpringAnimation? = null
 
     /**
-     * Tiến độ kéo tay cầm để mở rộng video tới full màn (0 = khung nhúng,
-     * 1 = tràn màn hình). Dùng chung cơ chế spring với hiệu ứng thu nhỏ nhưng
-     * chạy ngược lại: ngón tay kéo tới đâu khung hình giãn tới đó.
+     * Tiến độ chuyển cảnh fullscreen (0 = khung nhúng, 1 = tràn màn hình).
+     * Dùng chung cho cả cử chỉ kéo tay cầm (portrait) lẫn hiệu ứng vào/thoát
+     * fullscreen bằng nút hoặc Back trên mọi hướng màn hình (portrait,
+     * landscape và máy tính bảng).
      */
     private var fullscreenDragProgress = 0f
     private var fullscreenDragSpring: SpringAnimation? = null
     private var fullscreenDragActive = false
+    private var fullscreenTransitionActive = false
+    private var fullscreenSettledToFullscreen = false
+    private var transitionTwoColumn = false
+    private var transitionEmbeddedTop = 0
+    private var transitionEmbeddedWidth = 0
+    private var transitionEmbeddedHeight = 0
+    private var transitionFullWidth = 0
+    private var transitionFullHeight = 0
     // Phải dùng toạ độ thô: sheet (và tay cầm) bị dời theo đúng ngón tay trong
     // lúc kéo, nên event.x/y của chính tay cầm bị triệt tiêu chuyển động.
     private var fullscreenDragStartRawY = 0f
     private var fullscreenDragStartRawX = 0f
-    private var fullscreenDragBaseTop = 0
-    private var fullscreenDragBaseBottom = 0
-    private var fullscreenDragTargetBottom = 0
     private var fullscreenDragVelocity: VelocityTracker? = null
     // ACTION_MOVE có thể tới nhiều lần trong một frame. Gom các cập nhật lại
     // bằng postOnAnimation và sửa trực tiếp LayoutParams hiện có thay vì cấp
@@ -340,6 +347,8 @@ class PlayerNativeView @JvmOverloads constructor(
     private var windowInsets: WindowInsetsCompat? = null
     /** Inset trên của thanh trạng thái; dùng để đẩy vùng video xuống dưới nó. */
     private var topInset = 0
+    /** Inset trên ở chế độ nhúng (giữ nguyên ngay cả khi thanh hệ thống đang ẩn ở fullscreen). */
+    private var embeddedTopInset = 0
 
     private data class DetailsSignature(
         val videoId: String,
@@ -711,6 +720,7 @@ class PlayerNativeView @JvmOverloads constructor(
      */
     private fun beginMinimize() {
         cancelMinimizeAnimation()
+        cancelFullscreenDrag(restoreLayout = false)
         // Áp dụng cho mọi lối vào: hiệu ứng chỉ còn khung hình.
         playerHud.hideControlsForMinimize()
         if (!minimizeBaseCaptured) captureMinimizeBase()
@@ -994,24 +1004,49 @@ class PlayerNativeView @JvmOverloads constructor(
         val bars = insets.getInsets(
             WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
         )
+        val systemIgnoringVisibility = insets.getInsetsIgnoringVisibility(
+            WindowInsetsCompat.Type.systemBars()
+        )
+        val cutout = insets.getInsets(WindowInsetsCompat.Type.displayCutout())
+        val persistentTop = maxOf(systemIgnoringVisibility.top, cutout.top, bars.top)
+        embeddedTopInset = when {
+            !state.isFullscreen && !inPip -> bars.top
+            persistentTop > 0 -> persistentTop
+            else -> embeddedTopInset
+        }
         // Cập nhật lại kích thước trước: vùng video được đẩy xuống dưới thanh
         // trạng thái (xem updateLayoutMetrics) nên cần biết inset mới.
         topInset = bars.top
-        updateLayoutMetrics()
+        if (fullscreenTransitionActive) {
+            captureFullscreenTransitionBounds()
+            applyFullscreenTransitionProgress(fullscreenDragProgress)
+        } else {
+            updateLayoutMetrics()
+        }
+        applyInsetsToContentAndHud(insets, bars)
+    }
+
+    private fun applyInsetsToContentAndHud(
+        insets: WindowInsetsCompat,
+        bars: androidx.core.graphics.Insets = insets.getInsets(
+            WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
+        )
+    ) {
         // Dùng kích thước cửa sổ từ resources thay vì width/height của view:
         // trong lúc xoay, view vẫn còn kích thước cũ nên tính inset bằng số đo
         // cũ sẽ làm nội dung và video chồng lên nhau một nhịp.
         val metrics = resources.displayMetrics
         val screenWidth = metrics.widthPixels
         val screenHeight = metrics.heightPixels
-        val twoColumn = isTwoColumnLayout(screenWidth)
+        val twoColumnContent = isTwoColumnLayout(screenWidth) ||
+            (fullscreenTransitionActive && supportsTwoColumnLayout(screenWidth))
         // Ở bố cục 2 cột, video đã nằm bên trái nên nội dung bên phải không cần
         // chừa inset trái; nhưng cột phải bắt đầu từ đỉnh màn hình nên phải
         // chừa thanh trạng thái, nếu không tiêu đề/thông tin sẽ nằm dưới nó.
         // Inset trên đã được tính vào topMargin của sheet ở updateLayoutMetrics;
         // phần nội dung chỉ cần chừa lề hai bên và đáy.
         detailsScroll.setPadding(
-            if (twoColumn) 0 else bars.left,
+            if (twoColumnContent) 0 else bars.left,
             0,
             bars.right,
             bars.bottom
@@ -1019,7 +1054,7 @@ class PlayerNativeView @JvmOverloads constructor(
         // Đáy HUD chỉ trùng đáy màn hình khi fullscreen/PiP hoặc khi vùng video
         // cao hơn màn hình (landscape không fullscreen). Lúc đó mới cần chừa
         // thanh điều hướng; ở portrait HUD kết thúc ngay dưới video.
-        val videoWidth = if (twoColumn) {
+        val videoWidth = if (twoColumnContent) {
             (screenWidth * 0.6f).toInt()
         } else {
             screenWidth
@@ -1030,13 +1065,24 @@ class PlayerNativeView @JvmOverloads constructor(
         // Video đã được đẩy xuống dưới thanh trạng thái ở chế độ thường nên HUD
         // không cần dịch thêm lần nữa; chỉ fullscreen/PiP mới dùng inset trực tiếp.
         val hudTop = if (state.isFullscreen || inPip) bars.top else 0
-        val hudRight = if (twoColumn) 0 else bars.right
+        val hudRight = if (isTwoColumnLayout(screenWidth)) 0 else bars.right
         playerHud.applyWindowInsets(bars.left, hudTop, hudRight, hudBottom)
     }
 
-    private fun isTwoColumnLayout(widthPx: Int): Boolean {
+    private fun supportsTwoColumnLayout(widthPx: Int): Boolean {
         val density = resources.displayMetrics.density.coerceAtLeast(1f)
-        return !state.isFullscreen && !inPip && widthPx / density >= 600f
+        return widthPx / density >= 600f
+    }
+
+    private fun isTwoColumnLayout(widthPx: Int): Boolean =
+        !state.isFullscreen && !inPip && supportsTwoColumnLayout(widthPx)
+
+    /**
+     * Thanh hệ thống vừa ẩn hoặc hiện khi đổi fullscreen: yêu cầu áp lại inset
+     * mà không huỷ hiệu ứng spring đang chạy giữa chế độ nhúng và toàn màn hình.
+     */
+    fun onSystemBarsVisibilityChanged() {
+        ViewCompat.requestApplyInsets(this)
     }
 
     /**
@@ -1045,7 +1091,7 @@ class PlayerNativeView @JvmOverloads constructor(
      * inset; nếu không, các phần tử giữ kích thước của hướng cũ và đè lên nhau.
      */
     fun onWindowConfigurationChanged() {
-        // Xoay/đổi cỡ cửa sổ làm sai toàn bộ hình học đã chốt của cú kéo.
+        // Xoay/đổi cỡ cửa sổ làm sai toàn bộ hình học đã chốt của cú kéo/chuyển cảnh.
         cancelFullscreenDrag(restoreLayout = false)
         val insets = ViewCompat.getRootWindowInsets(this) ?: windowInsets
         if (insets != null) {
@@ -1057,19 +1103,41 @@ class PlayerNativeView @JvmOverloads constructor(
         ViewCompat.requestApplyInsets(this)
     }
 
+    private fun applyEmbeddedDetailsStyling(twoCol: Boolean) {
+        detailsHeader.visibility = if (twoCol) View.GONE else View.VISIBLE
+        if (twoCol) {
+            detailsContainer.setPadding(
+                context.dp(20f),
+                context.dp(16f),
+                context.dp(20f),
+                context.dp(32f)
+            )
+        } else {
+            detailsContainer.setPadding(
+                context.dp(16f),
+                context.dp(4f),
+                context.dp(16f),
+                context.dp(32f)
+            )
+        }
+    }
+
     fun updateLayoutMetrics() {
         fullscreen = state.isFullscreen
         // Fullscreen/PiP có thể đến từ HUD hoặc hệ thống giữa lúc đang kéo:
         // huỷ cử chỉ trước khi ghi lại LayoutParams cho trạng thái mới.
-        if ((fullscreen || inPip) && fullscreenDragActive) {
+        if ((fullscreen || inPip) && (fullscreenDragActive || fullscreenTransitionActive)) {
             cancelFullscreenDrag(restoreLayout = false)
         }
-        // Khi vào fullscreen bằng cú kéo, sheet bị làm mờ dần theo ngón tay.
-        // Phải trả lại alpha/độ dời ở MỌI lần tính lại bố cục, nếu không lúc
-        // thoát fullscreen sheet hiện ra nhưng vẫn trong suốt (card trắng).
+        // Khi vào fullscreen bằng cú kéo/chuyển cảnh, sheet bị làm mờ và dịch
+        // đi. Phải trả lại alpha/độ dời ở MỌI lần tính lại bố cục, nếu không
+        // lúc thoát fullscreen sheet hiện ra nhưng vẫn bị mờ hoặc lệch vị trí.
         detailsSheet.alpha = 1f
+        detailsSheet.translationX = 0f
         detailsSheet.translationY = 0f
-        if (!fullscreenDragActive) fullscreenDragProgress = 0f
+        if (!fullscreenDragActive && !fullscreenTransitionActive) {
+            fullscreenDragProgress = if (fullscreen) 1f else 0f
+        }
         // Kích thước lấy từ resources (cửa sổ hiện tại) thay vì width/height của
         // view: khi xoay, onConfigurationChanged chạy trước khi view được đo lại.
         val metrics = resources.displayMetrics
@@ -1080,23 +1148,10 @@ class PlayerNativeView @JvmOverloads constructor(
         // điều khiển không chồng lên nhau.
         playerHud.setCompactMode(!fullscreen && !inPip)
 
-        detailsHeader.visibility = if (!fullscreen && !inPip && twoColumn) View.GONE else View.VISIBLE
         if (!fullscreen && !inPip) {
-            if (twoColumn) {
-                detailsContainer.setPadding(
-                    context.dp(20f),
-                    context.dp(16f),
-                    context.dp(20f),
-                    context.dp(32f)
-                )
-            } else {
-                detailsContainer.setPadding(
-                    context.dp(16f),
-                    context.dp(4f),
-                    context.dp(16f),
-                    context.dp(32f)
-                )
-            }
+            applyEmbeddedDetailsStyling(twoColumn)
+        } else {
+            detailsHeader.visibility = if (twoColumn) View.GONE else View.VISIBLE
         }
         if (fullscreen || inPip) {
             videoContainer.layoutParams = FrameLayout.LayoutParams(
@@ -1151,7 +1206,14 @@ class PlayerNativeView @JvmOverloads constructor(
         super.onSizeChanged(w, h, oldw, oldh)
         // Chiều cao cũng phải tính lại: thanh trạng thái/điều hướng hoặc bàn
         // phím có thể chỉ đổi chiều cao mà không đổi chiều rộng.
-        if (w != oldw || h != oldh) updateLayoutMetrics()
+        if (w != oldw || h != oldh) {
+            if (fullscreenTransitionActive) {
+                captureFullscreenTransitionBounds()
+                applyFullscreenTransitionProgress(fullscreenDragProgress)
+            } else {
+                updateLayoutMetrics()
+            }
+        }
     }
 
     private fun renderPlayer() {
@@ -1174,10 +1236,21 @@ class PlayerNativeView @JvmOverloads constructor(
         )
         playerHud.renderPosition(position)
         if (fullscreen != state.isFullscreen) {
-            // applyWindowInsets() đã gọi updateLayoutMetrics(); chỉ gọi riêng
-            // updateLayoutMetrics() khi chưa có inset để tránh requestLayout đôi.
-            // Inset đáy của HUD cũng phụ thuộc trạng thái toàn màn hình.
-            windowInsets?.let { applyWindowInsets(it) } ?: updateLayoutMetrics()
+            val targetFullscreen = state.isFullscreen
+            if (fullscreenSettledToFullscreen && targetFullscreen) {
+                fullscreenSettledToFullscreen = false
+                fullscreenTransitionActive = false
+                fullscreenDragProgress = 1f
+                windowInsets?.let { applyWindowInsets(it) } ?: updateLayoutMetrics()
+            } else if (shouldAnimateFullscreenTransition()) {
+                fullscreenSettledToFullscreen = false
+                startFullscreenTransition(toFullscreen = targetFullscreen)
+            } else {
+                fullscreenSettledToFullscreen = false
+                cancelFullscreenDrag(restoreLayout = false)
+                fullscreenDragProgress = if (targetFullscreen) 1f else 0f
+                windowInsets?.let { applyWindowInsets(it) } ?: updateLayoutMetrics()
+            }
         }
     }
 
@@ -2472,9 +2545,9 @@ class PlayerNativeView @JvmOverloads constructor(
                         fullscreenDragActive = true
                     }
                     if (fullscreenDragActive) {
+                        val embeddedBottom = transitionEmbeddedTop + transitionEmbeddedHeight
                         val distance =
-                            (fullscreenDragTargetBottom - fullscreenDragBaseBottom)
-                                .coerceAtLeast(1)
+                            (transitionFullHeight - embeddedBottom).coerceAtLeast(1)
                         fullscreenDragPendingProgress = (dy / distance).coerceIn(0f, 1f)
                         if (!fullscreenDragUpdatePosted) {
                             fullscreenDragUpdatePosted = true
@@ -2537,10 +2610,8 @@ class PlayerNativeView @JvmOverloads constructor(
     }
 
     /**
-     * Huỷ cử chỉ kéo fullscreen khi rời ngữ cảnh (PiP, xoay màn hình, release,
-     * đóng sheet) hoặc khi fullscreen được bật từ nơi khác. Dọn toàn bộ trạng
-     * thái lò xo/vận tốc; [restoreLayout] đúng thì tính lại bố cục ngay, sai vì
-     * bố cục mới sẽ được tính ở bước tiếp theo.
+     * Huỷ cử chỉ kéo hoặc chuyển cảnh fullscreen khi rời ngữ cảnh (PiP, xoay
+     * màn hình, release, thu nhỏ) hoặc khi cập nhật bố cục tức thì.
      */
     private fun cancelFullscreenDrag(restoreLayout: Boolean = true) {
         fullscreenDragSpring?.cancel()
@@ -2549,23 +2620,121 @@ class PlayerNativeView @JvmOverloads constructor(
         fullscreenDragVelocity = null
         removeCallbacks(fullscreenDragUpdateRunnable)
         fullscreenDragUpdatePosted = false
-        val wasActive = fullscreenDragActive
+        val wasActive = fullscreenDragActive || fullscreenTransitionActive
         fullscreenDragActive = false
-        fullscreenDragProgress = 0f
+        fullscreenTransitionActive = false
+        fullscreenSettledToFullscreen = false
+        fullscreenDragProgress = if (state.isFullscreen) 1f else 0f
         fullscreenDragPendingProgress = 0f
+        detailsSheet.translationX = 0f
+        detailsSheet.translationY = 0f
+        detailsSheet.alpha = 1f
         if (wasActive && restoreLayout) updateLayoutMetrics()
     }
 
     private fun canStartFullscreenDrag(): Boolean =
-        !state.isFullscreen && !inPip && !twoColumn
+        !state.isFullscreen && !inPip && !twoColumn && !fullscreenTransitionActive
 
     private fun captureFullscreenDragBase() {
-        val metrics = resources.displayMetrics
-        fullscreenDragBaseTop = topInset
-        fullscreenDragBaseBottom = topInset + embeddedVideoHeightPx()
-        fullscreenDragTargetBottom = metrics.heightPixels
+        captureFullscreenTransitionBounds()
         fullscreenDragProgress = 0f
         fullscreenDragPendingProgress = 0f
+    }
+
+    private fun shouldAnimateFullscreenTransition(): Boolean =
+        !inPip &&
+            minimizeState == MinimizeState.IDLE &&
+            visibility == View.VISIBLE &&
+            width > 0 &&
+            height > 0
+
+    private fun captureFullscreenTransitionBounds() {
+        val metrics = resources.displayMetrics
+        val screenWidth = metrics.widthPixels.coerceAtLeast(1)
+        val screenHeight = metrics.heightPixels.coerceAtLeast(1)
+        val fullW = width.takeIf { it > 0 } ?: screenWidth
+        val fullH = height.takeIf { it > 0 } ?: screenHeight
+        val embeddedTop = if (!state.isFullscreen && !inPip) topInset else embeddedTopInset
+        val isTwoCol = supportsTwoColumnLayout(screenWidth)
+        val embeddedW = if (isTwoCol) {
+            (screenWidth * 0.6f).toInt().coerceAtLeast(1)
+        } else {
+            fullW
+        }
+        val basisWidth = if (isTwoCol) embeddedW else screenWidth
+        val embeddedH = (basisWidth * 9 / 16)
+            .coerceAtMost((screenHeight - embeddedTop).coerceAtLeast(1))
+            .coerceAtLeast(1)
+        transitionTwoColumn = isTwoCol
+        transitionEmbeddedTop = embeddedTop
+        transitionEmbeddedWidth = embeddedW
+        transitionEmbeddedHeight = embeddedH
+        transitionFullWidth = fullW
+        transitionFullHeight = fullH
+    }
+
+    private fun startFullscreenTransition(toFullscreen: Boolean) {
+        fullscreenDragSpring?.cancel()
+        fullscreenDragSpring = null
+        fullscreenDragVelocity?.recycle()
+        fullscreenDragVelocity = null
+        removeCallbacks(fullscreenDragUpdateRunnable)
+        fullscreenDragUpdatePosted = false
+        fullscreenDragActive = false
+
+        val startProgress = if (fullscreenTransitionActive) {
+            fullscreenDragProgress.coerceIn(0f, 1f)
+        } else if (toFullscreen) {
+            0f
+        } else {
+            1f
+        }
+
+        fullscreen = toFullscreen
+        twoColumn = isTwoColumnLayout(resources.displayMetrics.widthPixels)
+        playerHud.setCompactMode(!fullscreen && !inPip)
+
+        captureFullscreenTransitionBounds()
+        applyEmbeddedDetailsStyling(transitionTwoColumn)
+
+        fullscreenTransitionActive = true
+        applyFullscreenTransitionProgress(startProgress)
+        windowInsets?.let { applyInsetsToContentAndHud(it) }
+
+        val target = if (toFullscreen) 1f else 0f
+        animateFullscreenTransitionTo(target)
+    }
+
+    private fun animateFullscreenTransitionTo(target: Float) {
+        val distance = target - fullscreenDragProgress
+        if (abs(distance) < 0.001f) {
+            settleFullscreenTransition()
+            return
+        }
+        val animation = SpringAnimation(this, fullscreenDragProgressProperty, target)
+        animation.setSpring(
+            SpringForce(target)
+                .setDampingRatio(SpringForce.DAMPING_RATIO_NO_BOUNCY)
+                .setStiffness(FULLSCREEN_SPRING_STIFFNESS)
+        )
+        animation.setMinimumVisibleChange(0.001f)
+        animation.setStartValue(fullscreenDragProgress)
+        animation.setStartVelocity(0f)
+        animation.addEndListener { ended, canceled, _, _ ->
+            if (ended === fullscreenDragSpring) fullscreenDragSpring = null
+            if (!canceled) settleFullscreenTransition()
+        }
+        fullscreenDragSpring = animation
+        animation.start()
+    }
+
+    private fun settleFullscreenTransition() {
+        fullscreenTransitionActive = false
+        fullscreenDragProgress = if (state.isFullscreen) 1f else 0f
+        detailsSheet.translationX = 0f
+        detailsSheet.translationY = 0f
+        detailsSheet.alpha = 1f
+        windowInsets?.let { applyWindowInsets(it) } ?: updateLayoutMetrics()
     }
 
     private fun embeddedVideoHeightPx(): Int {
@@ -2575,33 +2744,96 @@ class PlayerNativeView @JvmOverloads constructor(
     }
 
     private fun setFullscreenDragProgress(value: Float) {
+        applyFullscreenTransitionProgress(value)
+    }
+
+    private fun applyFullscreenTransitionProgress(value: Float) {
         val progress = value.coerceIn(0f, 1f)
         fullscreenDragProgress = progress
-        if (!fullscreenDragActive) return
-        val top = (fullscreenDragBaseTop * (1f - progress)).toInt()
-        val bottom = (
-            fullscreenDragBaseBottom +
-                (fullscreenDragTargetBottom - fullscreenDragBaseBottom) * progress
-            ).toInt()
-        val height = (bottom - top).coerceAtLeast(1)
-        // Sửa ngay đối tượng LayoutParams đang dùng, chỉ requestLayout() khi
-        // số đo thực sự đổi. Gán lại layoutParams ở mỗi ACTION_MOVE vừa cấp
-        // phát đối tượng mới vừa kích hoạt lại cả chu trình measure/layout.
-        (videoContainer.layoutParams as? FrameLayout.LayoutParams)?.let { lp ->
-            if (lp.height != height || lp.topMargin != top) {
-                lp.height = height
-                lp.topMargin = top
-                videoContainer.requestLayout()
+        if (!fullscreenDragActive && !fullscreenTransitionActive) return
+
+        if (transitionTwoColumn) {
+            val top = (transitionEmbeddedTop * (1f - progress)).roundToInt()
+            val currentWidth = (
+                transitionEmbeddedWidth +
+                    (transitionFullWidth - transitionEmbeddedWidth) * progress
+                ).roundToInt().coerceAtLeast(1)
+            val currentHeight = (
+                transitionEmbeddedHeight +
+                    (transitionFullHeight - transitionEmbeddedHeight) * progress
+                ).roundToInt().coerceAtLeast(1)
+            (videoContainer.layoutParams as? FrameLayout.LayoutParams)?.let { lp ->
+                if (lp.leftMargin != 0 || lp.topMargin != top ||
+                    lp.width != currentWidth || lp.height != currentHeight
+                ) {
+                    lp.leftMargin = 0
+                    lp.topMargin = top
+                    lp.width = currentWidth
+                    lp.height = currentHeight
+                    videoContainer.requestLayout()
+                }
             }
-        }
-        (detailsSheet.layoutParams as? FrameLayout.LayoutParams)?.let { lp ->
-            if (lp.topMargin != bottom) {
-                lp.topMargin = bottom
-                detailsSheet.requestLayout()
+
+            val screenWidth = resources.displayMetrics.widthPixels.coerceAtLeast(1)
+            val contentWidth = (screenWidth - transitionEmbeddedWidth).coerceAtLeast(1)
+            (detailsSheet.layoutParams as? FrameLayout.LayoutParams)?.let { lp ->
+                if (lp.leftMargin != transitionEmbeddedWidth ||
+                    lp.topMargin != transitionEmbeddedTop ||
+                    lp.width != contentWidth ||
+                    lp.height != FrameLayout.LayoutParams.MATCH_PARENT
+                ) {
+                    lp.leftMargin = transitionEmbeddedWidth
+                    lp.topMargin = transitionEmbeddedTop
+                    lp.width = contentWidth
+                    lp.height = FrameLayout.LayoutParams.MATCH_PARENT
+                    detailsSheet.requestLayout()
+                }
             }
+            detailsSheet.visibility = View.VISIBLE
+            detailsSheet.translationX = (currentWidth - transitionEmbeddedWidth).toFloat()
+            detailsSheet.translationY = 0f
+            detailsSheet.alpha = 1f - progress
+        } else {
+            val top = (transitionEmbeddedTop * (1f - progress)).roundToInt()
+            val embeddedBottom = transitionEmbeddedTop + transitionEmbeddedHeight
+            val bottom = (
+                embeddedBottom + (transitionFullHeight - embeddedBottom) * progress
+                ).roundToInt()
+            val height = (bottom - top).coerceAtLeast(1)
+            // Sửa ngay đối tượng LayoutParams đang dùng, chỉ requestLayout() khi
+            // số đo thực sự đổi. Gán lại layoutParams ở mỗi ACTION_MOVE vừa cấp
+            // phát đối tượng mới vừa kích hoạt lại cả chu trình measure/layout.
+            (videoContainer.layoutParams as? FrameLayout.LayoutParams)?.let { lp ->
+                if (lp.leftMargin != 0 ||
+                    lp.width != FrameLayout.LayoutParams.MATCH_PARENT ||
+                    lp.height != height ||
+                    lp.topMargin != top
+                ) {
+                    lp.leftMargin = 0
+                    lp.width = FrameLayout.LayoutParams.MATCH_PARENT
+                    lp.height = height
+                    lp.topMargin = top
+                    videoContainer.requestLayout()
+                }
+            }
+            (detailsSheet.layoutParams as? FrameLayout.LayoutParams)?.let { lp ->
+                if (lp.leftMargin != 0 ||
+                    lp.width != FrameLayout.LayoutParams.MATCH_PARENT ||
+                    lp.height != FrameLayout.LayoutParams.MATCH_PARENT ||
+                    lp.topMargin != bottom
+                ) {
+                    lp.leftMargin = 0
+                    lp.width = FrameLayout.LayoutParams.MATCH_PARENT
+                    lp.height = FrameLayout.LayoutParams.MATCH_PARENT
+                    lp.topMargin = bottom
+                    detailsSheet.requestLayout()
+                }
+            }
+            detailsSheet.visibility = View.VISIBLE
+            detailsSheet.translationX = 0f
+            detailsSheet.alpha = 1f - progress
+            detailsSheet.translationY = progress * context.dp(24f)
         }
-        detailsSheet.alpha = 1f - progress
-        detailsSheet.translationY = progress * context.dp(24f)
     }
 
     private fun finishFullscreenDrag(velocityY: Float) {
@@ -2639,14 +2871,23 @@ class PlayerNativeView @JvmOverloads constructor(
     }
 
     private fun settleFullscreenDrag(target: Float, commit: Boolean) {
-        setFullscreenDragProgress(target)
+        applyFullscreenTransitionProgress(target)
         fullscreenDragActive = false
         if (commit && !inPip) {
-            // Khung hình đã tràn màn hình; Activity sẽ đổi state + xoay ngay sau đó.
+            // Khung hình đã tràn màn hình; đánh dấu để renderPlayer() không phát
+            // lại hiệu ứng vào fullscreen từ đầu khi state đổi ngay sau đó.
+            fullscreenSettledToFullscreen = true
+            fullscreenDragProgress = 1f
+            detailsSheet.visibility = View.GONE
+            detailsSheet.alpha = 1f
+            detailsSheet.translationX = 0f
+            detailsSheet.translationY = 0f
             onEnterFullscreen()
         } else {
             // Đang PiP thì không được đổi state fullscreen: chỉ khôi phục bố cục.
+            fullscreenDragProgress = 0f
             detailsSheet.alpha = 1f
+            detailsSheet.translationX = 0f
             detailsSheet.translationY = 0f
             updateLayoutMetrics()
         }
