@@ -45,6 +45,7 @@
     <string name="home_cast">Truyền phát</string>
     <string name="home_notifications">Thông báo</string>
     <string name="home_search">Tìm kiếm</string>
+    <string name="home_search_placeholder">Tìm kiếm…</string>
     <string name="home_avatar_letter">P</string>
     <string name="home_tab_trending">Thịnh hành</string>
     <string name="home_tab_for_you">Dành cho bạn</string>
@@ -52,6 +53,7 @@
     <string name="action_retry">Thử lại</string>
     <string name="action_back">Quay lại</string>
     <string name="channel_page_title">Kênh</string>
+    <string name="channel_badge_label">Kênh YouTube</string>
     <string name="channel_page_empty">Kênh chưa có video công khai.</string>
     <string name="channel_page_error_title">Không tải được kênh</string>
     <string name="channel_page_error_message">Vui lòng kiểm tra kết nối và thử lại.</string>
@@ -123,7 +125,10 @@
     <string name="library_title">Bạn</string>
     <string name="library_clear_history">Xóa lịch sử</string>
     <string name="library_profile_name">PureTube</string>
-    <string name="library_profile_subtitle">\@puretube • Kênh của bạn</string>
+    <string name="library_profile_subtitle">\@puretube • Thư viện ngoại tuyến trên thiết bị</string>
+    <string name="library_stat_history">Đã xem</string>
+    <string name="library_stat_favorites">Đã thích</string>
+    <string name="library_stat_watch_later">Xem sau</string>
     <string name="library_view_channel">Xem kênh</string>
     <string name="library_tab_history">Lịch sử</string>
     <string name="library_tab_favorites">Video đã thích</string>
@@ -167,7 +172,8 @@
     <string name="settings_disclaimer">Dữ liệu công khai lấy trực tiếp từ YouTube. PureTube không liên kết với YouTube.</string>
     <string name="settings_sponsor_api_message">Địa chỉ API skipSegments. Để trống để dùng máy chủ chính thức sponsor.ajay.app.</string>
     <string name="settings_sponsor_api_hint">API URL</string>
-    <string name="settings_account_subtitle">Tài khoản của bạn • v%1$s</string>
+    <string name="settings_account_subtitle">Tài khoản trên thiết bị • v%1$s</string>
+    <string name="settings_hero_badge">Không quảng cáo • Mã nguồn mở</string>
     <string name="settings_about_title">PureTube Android v%1$s</string>
     <string name="settings_section_playback">PHÁT VIDEO</string>
     <string name="settings_section_sponsor">SPONSORBLOCK</string>

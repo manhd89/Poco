@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_settings_card"
+    android:background="@drawable/bg_hero_card"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:padding="16dp">
@@ -28,6 +28,21 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@drawable/bg_badge_tonal"
+            android:fontFamily="@font/plus_jakarta_sans"
+            android:paddingStart="10dp"
+            android:paddingTop="3dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="3dp"
+            android:text="@string/settings_hero_badge"
+            android:textColor="@color/pure_on_primary_container"
+            android:textSize="10sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
             android:fontFamily="@font/plus_jakarta_sans"
             android:text="@string/library_profile_name"
             android:textColor="@color/pure_on_surface"

@@ -21,6 +21,7 @@ class HomeMixCardView @JvmOverloads constructor(
 
     init {
         orientation = VERTICAL
+        applyCardSurface(10f)
         LayoutInflater.from(context).inflate(R.layout.view_home_mix_card, this, true)
         cover = findViewById(R.id.mix_cover)
         titleView = findViewById(R.id.mix_title)

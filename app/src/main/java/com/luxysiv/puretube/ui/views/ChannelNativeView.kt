@@ -99,7 +99,8 @@ class ChannelNativeView @JvmOverloads constructor(
                     val half = context.dp(8f)
                     outRect.set(half, half, half, half)
                 } else {
-                    outRect.set(0, 0, 0, 0)
+                    val verticalHalf = context.dp(5f)
+                    outRect.set(0, verticalHalf, 0, verticalHalf)
                 }
             }
         })

@@ -1,42 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Drawer điều hướng phẳng Android 16 cho màn hình expanded (>=840dp). -->
+<!-- Drawer điều hướng Material 3 Expressive cho màn hình expanded (>=840dp). -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/pure_surface"
     android:orientation="vertical"
-    android:paddingStart="12dp"
-    android:paddingTop="12dp"
-    android:paddingEnd="12dp"
-    android:paddingBottom="12dp">
+    android:paddingStart="14dp"
+    android:paddingTop="14dp"
+    android:paddingEnd="14dp"
+    android:paddingBottom="14dp">
 
     <LinearLayout
         android:id="@+id/drawer_brand"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="?attr/selectableItemBackground"
+        android:background="@drawable/bg_hero_card"
         android:clickable="true"
         android:focusable="true"
+        android:foreground="?attr/selectableItemBackground"
         android:gravity="center_vertical"
-        android:minHeight="48dp"
+        android:minHeight="56dp"
         android:orientation="horizontal"
-        android:paddingStart="12dp"
-        android:paddingTop="10dp"
-        android:paddingEnd="12dp"
-        android:paddingBottom="10dp">
+        android:paddingStart="14dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="14dp"
+        android:paddingBottom="12dp">
 
         <ImageView
-            android:layout_width="32dp"
-            android:layout_height="22dp"
+            android:layout_width="34dp"
+            android:layout_height="24dp"
             android:background="@drawable/bg_brand_logo"
             android:contentDescription="@string/nav_home"
-            android:padding="3dp"
+            android:padding="4dp"
             android:src="@drawable/ic_brand_play" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
+            android:layout_marginStart="12dp"
             android:fontFamily="@font/plus_jakarta_sans"
             android:letterSpacing="-0.03"
             android:text="@string/brand_name"
@@ -45,14 +46,9 @@
             android:textStyle="bold" />
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="10dp"
-        android:background="@color/pure_outline_variant" />
+    <Space
+        android:layout_width="1dp"
+        android:layout_height="14dp" />
 
     <LinearLayout
         android:id="@+id/drawer_nav_home"
@@ -62,7 +58,7 @@
         android:clickable="true"
         android:focusable="true"
         android:gravity="center_vertical"
-        android:minHeight="48dp"
+        android:minHeight="52dp"
         android:orientation="horizontal"
         android:paddingStart="16dp"
         android:paddingTop="12dp"
@@ -82,6 +78,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
+            android:fontFamily="@font/plus_jakarta_sans"
             android:text="@string/nav_home"
             android:textColor="@color/pure_nav_unselected"
             android:textSize="14sp" />
@@ -96,7 +93,7 @@
         android:clickable="true"
         android:focusable="true"
         android:gravity="center_vertical"
-        android:minHeight="48dp"
+        android:minHeight="52dp"
         android:orientation="horizontal"
         android:paddingStart="16dp"
         android:paddingTop="12dp"
@@ -116,6 +113,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
+            android:fontFamily="@font/plus_jakarta_sans"
             android:text="@string/nav_subscriptions"
             android:textColor="@color/pure_nav_unselected"
             android:textSize="14sp" />
@@ -130,7 +128,7 @@
         android:clickable="true"
         android:focusable="true"
         android:gravity="center_vertical"
-        android:minHeight="48dp"
+        android:minHeight="52dp"
         android:orientation="horizontal"
         android:paddingStart="16dp"
         android:paddingTop="12dp"
@@ -150,6 +148,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
+            android:fontFamily="@font/plus_jakarta_sans"
             android:text="@string/nav_library"
             android:textColor="@color/pure_nav_unselected"
             android:textSize="14sp" />
@@ -177,7 +176,7 @@
         android:clickable="true"
         android:focusable="true"
         android:gravity="center_vertical"
-        android:minHeight="48dp"
+        android:minHeight="52dp"
         android:orientation="horizontal"
         android:paddingStart="16dp"
         android:paddingTop="12dp"
@@ -197,6 +196,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
+            android:fontFamily="@font/plus_jakarta_sans"
             android:text="@string/nav_settings"
             android:textColor="@color/pure_nav_unselected"
             android:textSize="14sp" />

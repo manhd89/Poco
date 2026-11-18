@@ -31,11 +31,12 @@
             android:layout_width="wrap_content"
             android:layout_height="48dp"
             android:background="?attr/selectableItemBackgroundBorderless"
+            android:fontFamily="@font/plus_jakarta_sans"
             android:gravity="center"
             android:paddingStart="12dp"
             android:paddingEnd="8dp"
             android:text="@string/player_comments_view_all"
-            android:textColor="@color/pure_tertiary"
+            android:textColor="@color/pure_primary"
             android:textSize="13sp"
             android:textStyle="bold" />
     </LinearLayout>

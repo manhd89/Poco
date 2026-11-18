@@ -4,16 +4,18 @@
         android:id="@+id/card_thumbnail_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_video_thumb_large"
+        android:background="@drawable/bg_video_thumb"
         android:clipToOutline="true">
+
         <ImageView
             android:id="@+id/card_thumbnail"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/bg_video_thumb_large"
+            android:background="@drawable/bg_video_thumb"
             android:clipToOutline="true"
             android:contentDescription="@null"
             android:scaleType="centerCrop" />
+
         <TextView
             android:id="@+id/card_duration"
             android:layout_width="wrap_content"
@@ -21,13 +23,14 @@
             android:layout_gravity="bottom|end"
             android:layout_margin="8dp"
             android:background="@drawable/bg_duration"
-            android:paddingStart="6dp"
-            android:paddingTop="2dp"
-            android:paddingEnd="6dp"
-            android:paddingBottom="2dp"
+            android:paddingStart="7dp"
+            android:paddingTop="3dp"
+            android:paddingEnd="7dp"
+            android:paddingBottom="3dp"
             android:textColor="@android:color/white"
             android:textSize="11sp"
             android:textStyle="bold" />
+
         <ProgressBar
             android:id="@+id/card_progress"
             style="?android:attr/progressBarStyleHorizontal"
@@ -45,7 +48,10 @@
         android:layout_height="wrap_content"
         android:gravity="top"
         android:orientation="horizontal"
-        android:paddingTop="12dp">
+        android:paddingStart="2dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="2dp"
+        android:paddingBottom="2dp">
 
         <com.luxysiv.puretube.ui.views.ChannelAvatarView
             android:id="@+id/card_avatar"
@@ -96,7 +102,7 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginTop="-6dp"
-            android:layout_marginEnd="-12dp"
+            android:layout_marginEnd="-10dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/video_options"
             android:padding="13dp"

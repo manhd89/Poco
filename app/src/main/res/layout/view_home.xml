@@ -28,15 +28,15 @@
             <LinearLayout
                 android:id="@+id/home_tab_trending"
                 android:layout_width="wrap_content"
-                android:layout_height="40dp"
+                android:layout_height="44dp"
                 android:background="@drawable/bg_segmented_tab_selected"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center"
-                android:minWidth="104dp"
+                android:minWidth="112dp"
                 android:orientation="horizontal"
-                android:paddingStart="18dp"
-                android:paddingEnd="18dp">
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp">
 
                 <TextView
                     android:id="@+id/home_tab_trending_label"
@@ -52,16 +52,16 @@
             <LinearLayout
                 android:id="@+id/home_tab_for_you"
                 android:layout_width="wrap_content"
-                android:layout_height="40dp"
+                android:layout_height="44dp"
                 android:layout_marginStart="4dp"
                 android:background="@null"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center"
-                android:minWidth="104dp"
+                android:minWidth="112dp"
                 android:orientation="horizontal"
-                android:paddingStart="18dp"
-                android:paddingEnd="18dp">
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp">
 
                 <TextView
                     android:id="@+id/home_tab_for_you_label"

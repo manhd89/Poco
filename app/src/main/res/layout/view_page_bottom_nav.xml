@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Thanh điều hướng dưới cùng phẳng chuẩn Material 3 Expressive cho màn hình compact. -->
+<!-- Thanh điều hướng dưới cùng Material 3 Expressive cho màn hình compact. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -16,8 +16,8 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/bottom_nav_height"
         android:orientation="horizontal"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp">
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp">
 
         <LinearLayout
             android:id="@+id/bottom_nav_home"
@@ -52,6 +52,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:ellipsize="end"
+                android:fontFamily="@font/plus_jakarta_sans"
                 android:maxLines="1"
                 android:text="@string/nav_home"
                 android:textColor="@color/pure_nav_unselected"
@@ -91,6 +92,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:ellipsize="end"
+                android:fontFamily="@font/plus_jakarta_sans"
                 android:maxLines="1"
                 android:text="@string/nav_subscriptions"
                 android:textColor="@color/pure_nav_unselected"
@@ -130,6 +132,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:ellipsize="end"
+                android:fontFamily="@font/plus_jakarta_sans"
                 android:maxLines="1"
                 android:text="@string/nav_library"
                 android:textColor="@color/pure_nav_unselected"

@@ -5,7 +5,6 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
-import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -162,7 +161,7 @@ class HomeNativeView @JvmOverloads constructor(
         tabTrending.setOnClickListener { onSelectTab?.invoke(HomeTab.TRENDING) }
         tabForYou.setOnClickListener { onSelectTab?.invoke(HomeTab.FOR_YOU) }
 
-        findViewById<ImageButton>(R.id.home_search).setOnClickListener {
+        findViewById<View>(R.id.home_search).setOnClickListener {
             onSearchClick?.invoke()
         }
         findViewById<TextView>(R.id.home_avatar).setOnClickListener {

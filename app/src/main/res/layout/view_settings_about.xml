@@ -13,21 +13,27 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:contentDescription="@null"
-            android:src="@drawable/ic_info"
-            android:tint="@color/pure_primary" />
+        <FrameLayout
+            android:layout_width="36dp"
+            android:layout_height="24dp"
+            android:background="@drawable/bg_brand_logo">
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_gravity="center"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_brand_play" />
+        </FrameLayout>
 
         <TextView
             android:id="@+id/settings_about_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="10dp"
             android:fontFamily="@font/plus_jakarta_sans"
             android:textColor="@color/pure_on_surface"
-            android:textSize="15sp"
+            android:textSize="16sp"
             android:textStyle="bold" />
     </LinearLayout>
 
@@ -54,6 +60,7 @@
             android:layout_marginEnd="6dp"
             android:layout_weight="1"
             android:ellipsize="end"
+            android:fontFamily="@font/plus_jakarta_sans"
             android:maxLines="1"
             android:text="@string/settings_source"
             android:textAllCaps="false"
@@ -70,6 +77,7 @@
             android:layout_marginStart="6dp"
             android:layout_weight="1"
             android:ellipsize="end"
+            android:fontFamily="@font/plus_jakarta_sans"
             android:maxLines="1"
             android:text="@string/settings_license"
             android:textAllCaps="false"

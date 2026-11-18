@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Thiết kế phẳng Android 16: không dùng bóng đổ, tách lớp bằng nền tonal + viền 1dp. -->
+    <!-- Thiết kế phẳng Android 16: phân tầng bằng bề mặt tonal + viền hairline 1dp. -->
     <dimen name="mini_player_elevation">0dp</dimen>
     <dimen name="page_rail_width">84dp</dimen>
-    <dimen name="page_drawer_width">248dp</dimen>
-    <dimen name="bottom_nav_height">64dp</dimen>
+    <dimen name="page_drawer_width">256dp</dimen>
+    <dimen name="bottom_nav_height">68dp</dimen>
 </resources>

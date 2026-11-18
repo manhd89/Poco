@@ -4,6 +4,7 @@
     dành cho nền video tối nên không đổi theo theme sáng/tối của ứng dụng.
 -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/player_hud_root"
     android:layout_width="match_parent"
@@ -357,14 +358,14 @@
 
     <ImageButton
         android:id="@+id/hud_lock"
-        android:layout_width="44dp"
-        android:layout_height="44dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_gravity="bottom|start"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="104dp"
         android:background="@drawable/bg_player_icon_button"
         android:contentDescription="@string/player_lock_controls"
-        android:padding="11dp"
+        android:padding="12dp"
         android:scaleType="centerInside"
         android:src="@drawable/ic_lock"
         android:tint="@color/player_on_scrim"
@@ -438,10 +439,14 @@
                 android:id="@+id/hud_error_retry"
                 style="@style/Widget.Material3.Button"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_marginTop="16dp"
+                android:fontFamily="@font/plus_jakarta_sans"
+                android:paddingStart="24dp"
+                android:paddingEnd="24dp"
                 android:text="@string/action_retry"
-                android:textAllCaps="false" />
+                android:textAllCaps="false"
+                app:cornerRadius="100dp" />
         </LinearLayout>
     </FrameLayout>
 

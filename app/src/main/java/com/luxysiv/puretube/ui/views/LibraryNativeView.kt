@@ -149,7 +149,11 @@ class LibraryNativeView @JvmOverloads constructor(
 
     private fun buildRows(): List<LibraryRow> {
         val rows = ArrayList<LibraryRow>()
-        rows += LibraryRow.Profile
+        rows += LibraryRow.Profile(
+            historyCount = history.size + playlists.size,
+            favoriteCount = favorites.size,
+            watchLaterCount = watchLater.size + savedPlaylists.size
+        )
         rows += LibraryRow.Chips(selectedTabIndex)
 
         if (selectedTabIndex == 0) {
@@ -247,7 +251,11 @@ class LibraryNativeView @JvmOverloads constructor(
     // ------------------------------------------------------------------
 
     private sealed interface LibraryRow {
-        data object Profile : LibraryRow
+        data class Profile(
+            val historyCount: Int,
+            val favoriteCount: Int,
+            val watchLaterCount: Int
+        ) : LibraryRow
         data class Chips(val selectedIndex: Int) : LibraryRow
         data class DayHeader(val label: String) : LibraryRow
         data class Video(val entity: VideoEntity, val removable: Boolean) : LibraryRow
@@ -303,7 +311,7 @@ class LibraryNativeView @JvmOverloads constructor(
         override fun getItemCount(): Int = rows.size
 
         override fun getItemViewType(position: Int): Int = when (rows[position]) {
-            LibraryRow.Profile -> TYPE_PROFILE
+            is LibraryRow.Profile -> TYPE_PROFILE
             is LibraryRow.Chips -> TYPE_CHIPS
             is LibraryRow.DayHeader -> TYPE_DAY
             is LibraryRow.Video -> TYPE_VIDEO
@@ -316,7 +324,7 @@ class LibraryNativeView @JvmOverloads constructor(
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             val inflater = LayoutInflater.from(parent.context)
             return when (viewType) {
-                TYPE_PROFILE -> SimpleHolder(inflater.inflate(R.layout.view_library_profile, parent, false))
+                TYPE_PROFILE -> ProfileHolder(inflater.inflate(R.layout.view_library_profile, parent, false))
                 TYPE_CHIPS -> ChipsHolder(inflater.inflate(R.layout.view_library_chip_row, parent, false))
                 TYPE_DAY -> DayHolder(inflater.inflate(R.layout.view_library_day_header, parent, false))
                 TYPE_VIDEO -> {
@@ -344,14 +352,13 @@ class LibraryNativeView @JvmOverloads constructor(
 
         override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
             when (val row = rows[position]) {
-                LibraryRow.Profile -> Unit
+                is LibraryRow.Profile -> (holder as ProfileHolder).bind(row)
                 is LibraryRow.Chips -> (holder as ChipsHolder).bind(row.selectedIndex)
                 is LibraryRow.DayHeader -> (holder as DayHolder).label.text = row.label
                 is LibraryRow.Video -> {
                     val currentActions = actions ?: return
                     val video = row.entity.toVideoItem()
                     val card = (holder as VideoHolder).card
-                    card.setPadding(0, context.dp(4f), 0, context.dp(4f))
                     card.bind(
                         video = video,
                         isFavorite = row.entity.isFavorite,
@@ -364,7 +371,6 @@ class LibraryNativeView @JvmOverloads constructor(
                 is LibraryRow.Empty -> (holder as EmptyHolder).bind(row.tabIndex)
                 is LibraryRow.Playlist -> {
                     val card = (holder as PlaylistHolder).card
-                    card.setPadding(0, context.dp(4f), 0, context.dp(4f))
                     val item = row.entity.toPlaylistItem()
                     card.bind(
                         playlist = item,
@@ -376,7 +382,6 @@ class LibraryNativeView @JvmOverloads constructor(
 
                 is LibraryRow.SavedPlaylist -> {
                     val card = (holder as PlaylistHolder).card
-                    card.setPadding(0, context.dp(4f), 0, context.dp(4f))
                     val item = row.entity.toPlaylistItem()
                     card.bind(
                         playlist = item,
@@ -393,7 +398,26 @@ class LibraryNativeView @JvmOverloads constructor(
         }
     }
 
-    private class SimpleHolder(view: View) : RecyclerView.ViewHolder(view)
+    private inner class ProfileHolder(view: View) : RecyclerView.ViewHolder(view) {
+        private val historyStat: View = view.findViewById(R.id.library_stat_history)
+        private val favoritesStat: View = view.findViewById(R.id.library_stat_favorites)
+        private val watchLaterStat: View = view.findViewById(R.id.library_stat_watch_later)
+        private val historyCount: TextView = view.findViewById(R.id.library_stat_history_count)
+        private val favoritesCount: TextView = view.findViewById(R.id.library_stat_favorites_count)
+        private val watchLaterCount: TextView = view.findViewById(R.id.library_stat_watch_later_count)
+
+        init {
+            historyStat.setOnClickListener { selectTab(0) }
+            favoritesStat.setOnClickListener { selectTab(1) }
+            watchLaterStat.setOnClickListener { selectTab(2) }
+        }
+
+        fun bind(row: LibraryRow.Profile) {
+            historyCount.text = row.historyCount.toString()
+            favoritesCount.text = row.favoriteCount.toString()
+            watchLaterCount.text = row.watchLaterCount.toString()
+        }
+    }
 
     private class DayHolder(view: View) : RecyclerView.ViewHolder(view) {
         val label: TextView = view.findViewById(R.id.library_day_label)

@@ -50,8 +50,7 @@ class CompactVideoCardView @JvmOverloads constructor(
 
     init {
         orientation = HORIZONTAL
-        val verticalPadding = context.dp(8f)
-        setPadding(0, verticalPadding, 0, verticalPadding)
+        applyCardSurface(10f)
         LayoutInflater.from(context).inflate(R.layout.view_video_card_compact, this, true)
         thumbnailContainer = findViewById(R.id.card_thumbnail_container)
         thumbnail = findViewById(R.id.card_thumbnail)

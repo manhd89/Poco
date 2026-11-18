@@ -7,7 +7,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="64dp"
         android:background="@color/pure_surface"
         android:gravity="center_vertical"
         android:orientation="horizontal"
@@ -31,6 +31,7 @@
             android:layout_marginStart="4dp"
             android:layout_weight="1"
             android:fontFamily="@font/plus_jakarta_sans"
+            android:letterSpacing="-0.02"
             android:text="@string/nav_settings"
             android:textColor="@color/pure_on_surface"
             android:textSize="22sp"

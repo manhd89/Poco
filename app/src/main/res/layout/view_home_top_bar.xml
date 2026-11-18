@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="60dp"
+    android:layout_height="64dp"
     android:background="@color/pure_surface"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:paddingStart="16dp"
-    android:paddingEnd="8dp">
+    android:paddingEnd="10dp">
 
     <FrameLayout
-        android:layout_width="32dp"
-        android:layout_height="22dp"
+        android:layout_width="34dp"
+        android:layout_height="24dp"
         android:background="@drawable/bg_brand_logo">
 
         <ImageView
@@ -24,7 +24,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="9dp"
         android:fontFamily="@font/plus_jakarta_sans"
         android:letterSpacing="-0.03"
         android:text="@string/brand_name"
@@ -37,17 +37,38 @@
         android:layout_height="1dp"
         android:layout_weight="1" />
 
-    <ImageButton
+    <LinearLayout
         android:id="@+id/home_search"
-        android:layout_width="48dp"
+        android:layout_width="wrap_content"
         android:layout_height="48dp"
-        android:background="@drawable/bg_circle_tonal_48"
+        android:layout_marginEnd="4dp"
+        android:background="@drawable/bg_search_field"
+        android:clickable="true"
         android:contentDescription="@string/home_search"
+        android:focusable="true"
         android:foreground="?attr/selectableItemBackgroundBorderless"
-        android:padding="13dp"
-        android:scaleType="centerInside"
-        android:src="@drawable/ic_search"
-        android:tint="@color/pure_on_surface" />
+        android:gravity="center_vertical"
+        android:minWidth="48dp"
+        android:orientation="horizontal"
+        android:paddingStart="14dp"
+        android:paddingEnd="16dp">
+
+        <ImageView
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_search"
+            android:tint="@color/pure_on_surface_variant" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:maxLines="1"
+            android:text="@string/home_search_placeholder"
+            android:textColor="@color/pure_on_surface_variant"
+            android:textSize="13sp" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/home_avatar"
@@ -57,10 +78,11 @@
         android:clickable="true"
         android:contentDescription="@string/nav_library"
         android:focusable="true"
+        android:fontFamily="@font/plus_jakarta_sans"
         android:foreground="?attr/selectableItemBackgroundBorderless"
         android:gravity="center"
         android:text="@string/home_avatar_letter"
         android:textColor="@android:color/white"
-        android:textSize="14sp"
+        android:textSize="15sp"
         android:textStyle="bold" />
 </LinearLayout>

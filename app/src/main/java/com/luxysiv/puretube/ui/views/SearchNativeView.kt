@@ -636,17 +636,18 @@ class SearchNativeView @JvmOverloads constructor(
                 return
             }
             val outer = context.dp(16f)
+            val verticalHalf = context.dp(5f)
             if (columns <= 1) {
-                outRect.set(outer, 0, outer, 0)
+                outRect.set(outer, verticalHalf, outer, verticalHalf)
             } else {
                 val halfGap = context.dp(8f)
                 val lp = view.layoutParams as? GridLayoutManager.LayoutParams
                 val spanIndex = lp?.spanIndex ?: 0
                 outRect.set(
                     if (spanIndex == 0) outer else halfGap,
-                    0,
+                    verticalHalf,
                     if (spanIndex == columns - 1) outer else halfGap,
-                    0
+                    verticalHalf
                 )
             }
         }

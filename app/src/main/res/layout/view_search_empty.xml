@@ -4,34 +4,50 @@
     android:layout_height="wrap_content"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:paddingStart="32dp"
-    android:paddingTop="64dp"
-    android:paddingEnd="32dp"
-    android:paddingBottom="64dp">
+    android:paddingStart="24dp"
+    android:paddingTop="48dp"
+    android:paddingEnd="24dp"
+    android:paddingBottom="48dp">
 
     <FrameLayout
-        android:layout_width="72dp"
-        android:layout_height="72dp"
-        android:background="@drawable/bg_circle_tonal">
+        android:layout_width="136dp"
+        android:layout_height="136dp">
 
         <ImageView
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="124dp"
+            android:layout_height="124dp"
             android:layout_gravity="center"
+            android:background="@drawable/bg_illustration_frame"
+            android:clipToOutline="true"
             android:contentDescription="@null"
-            android:src="@drawable/ic_search"
-            android:tint="@color/pure_on_surface_variant" />
+            android:scaleType="centerCrop"
+            android:src="@drawable/img_empty_search" />
+
+        <FrameLayout
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="bottom|end"
+            android:background="@drawable/bg_settings_card">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_search"
+                android:tint="@color/pure_primary" />
+        </FrameLayout>
     </FrameLayout>
 
     <TextView
         android:id="@+id/search_empty_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="18dp"
         android:fontFamily="@font/plus_jakarta_sans"
         android:gravity="center"
         android:textColor="@color/pure_on_surface"
-        android:textSize="17sp"
+        android:textSize="18sp"
         android:textStyle="bold" />
 
     <TextView
@@ -40,6 +56,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
         android:gravity="center"
+        android:lineSpacingExtra="2dp"
         android:maxWidth="340dp"
         android:text="@string/search_no_results_hint"
         android:textColor="@color/pure_on_surface_variant"

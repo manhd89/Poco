@@ -49,6 +49,7 @@ class VideoCardView @JvmOverloads constructor(
 
     init {
         orientation = VERTICAL
+        applyCardSurface(10f)
         LayoutInflater.from(context).inflate(R.layout.view_video_card, this, true)
         thumbnailContainer = findViewById(R.id.card_thumbnail_container)
         thumbnail = findViewById(R.id.card_thumbnail)

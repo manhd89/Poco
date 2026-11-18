@@ -40,8 +40,7 @@ class PlaylistCardView @JvmOverloads constructor(
 
     init {
         orientation = HORIZONTAL
-        val verticalPadding = context.dp(8f)
-        setPadding(0, verticalPadding, 0, verticalPadding)
+        applyCardSurface(10f)
         LayoutInflater.from(context).inflate(R.layout.view_playlist_card, this, true)
 
         thumbnailContainer = findViewById(R.id.playlist_thumbnail_container)

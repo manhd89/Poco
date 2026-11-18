@@ -283,13 +283,14 @@ class HomeAdapter(
 
         init {
             title.setTextColor(ContextCompat.getColor(context, R.color.pure_on_surface))
-            title.textSize = 20f
+            title.textSize = 19f
+            title.letterSpacing = -0.02f
             title.typeface = Typeface.create(
                 ResourcesCompat.getFont(context, R.font.plus_jakarta_sans) ?: Typeface.DEFAULT,
                 Typeface.BOLD
             )
             val density = context.resources.displayMetrics.density
-            title.setPadding(0, (6 * density).toInt(), 0, (2 * density).toInt())
+            title.setPadding(0, (10 * density).toInt(), 0, (4 * density).toInt())
             title.layoutParams = RecyclerView.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT

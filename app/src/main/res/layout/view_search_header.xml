@@ -25,7 +25,8 @@
         android:layout_marginStart="10dp"
         android:layout_weight="1"
         android:fontFamily="@font/plus_jakarta_sans"
-        android:textColor="@color/pure_on_surface"
+        android:letterSpacing="0.02"
+        android:textColor="@color/pure_on_surface_variant"
         android:textSize="13sp"
         android:textStyle="bold" />
 
@@ -36,11 +37,12 @@
         android:background="?attr/selectableItemBackground"
         android:clickable="true"
         android:focusable="true"
+        android:fontFamily="@font/plus_jakarta_sans"
         android:gravity="center"
         android:minHeight="48dp"
         android:paddingStart="12dp"
         android:paddingEnd="12dp"
-        android:textColor="@color/pure_tertiary"
+        android:textColor="@color/pure_primary"
         android:textSize="13sp"
         android:textStyle="bold"
         android:visibility="gone" />

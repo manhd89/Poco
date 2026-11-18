@@ -30,10 +30,11 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ellipsize="end"
-                android:fontFamily="sans-serif-medium"
+                android:fontFamily="@font/plus_jakarta_sans"
                 android:maxLines="1"
                 android:textColor="@color/pure_on_surface"
-                android:textSize="13sp" />
+                android:textSize="13sp"
+                android:textStyle="bold" />
 
             <ImageView
                 android:id="@+id/comment_verified"
@@ -49,25 +50,27 @@
                 android:id="@+id/comment_owner_badge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:background="@drawable/bg_chip"
-                android:paddingStart="6dp"
-                android:paddingTop="1dp"
-                android:paddingEnd="6dp"
-                android:paddingBottom="1dp"
+                android:layout_marginStart="6dp"
+                android:background="@drawable/bg_badge_tonal"
+                android:fontFamily="@font/plus_jakarta_sans"
+                android:paddingStart="7dp"
+                android:paddingTop="2dp"
+                android:paddingEnd="7dp"
+                android:paddingBottom="2dp"
                 android:text="@string/player_comment_author_badge"
-                android:textColor="@color/pure_on_surface_variant"
+                android:textColor="@color/pure_on_primary_container"
                 android:textSize="10sp"
+                android:textStyle="bold"
                 android:visibility="gone" />
 
             <ImageView
                 android:id="@+id/comment_hearted"
                 android:layout_width="14dp"
                 android:layout_height="14dp"
-                android:layout_marginStart="5dp"
+                android:layout_marginStart="6dp"
                 android:contentDescription="@string/player_comment_hearted"
                 android:src="@drawable/ic_favorite"
-                android:tint="@color/pure_tertiary"
+                android:tint="@color/pure_primary"
                 android:visibility="gone" />
         </LinearLayout>
 

@@ -1,44 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Bảng màu phẳng Android 16 / Material 3 sáng (Porcelain & Slate). -->
+    <!-- Cinema Porcelain Studio (Material 3 Expressive Sáng). -->
     <color name="pure_primary">#FFE62117</color>
     <color name="pure_on_primary">#FFFFFFFF</color>
-    <color name="pure_primary_container">#FFFEE4E2</color>
-    <color name="pure_on_primary_container">#FFB4140D</color>
+    <color name="pure_primary_container">#FFFDE5E4</color>
+    <color name="pure_on_primary_container">#FFA3120B</color>
 
-    <color name="pure_background">#FFF7F8FB</color>
+    <color name="pure_background">#FFF5F6FA</color>
     <color name="pure_surface">#FFFFFFFF</color>
-    <color name="pure_surface_variant">#FFEEF1F6</color>
-    <color name="pure_surface_container">#FFF0F2F7</color>
-    <color name="pure_surface_container_high">#FFE6E9F0</color>
-    <color name="pure_surface_container_highest">#FFDCE0EA</color>
-    <color name="pure_tertiary">#FF0B57D0</color>
+    <color name="pure_surface_variant">#FFECEFF6</color>
+    <color name="pure_surface_container">#FFEDF0F7</color>
+    <color name="pure_surface_container_high">#FFE3E7F0</color>
+    <color name="pure_surface_container_highest">#FFD6DCE9</color>
+    <color name="pure_tertiary">#FF155EEF</color>
 
-    <color name="pure_on_background">#FF111318</color>
-    <color name="pure_on_surface">#FF111318</color>
-    <color name="pure_on_surface_variant">#FF5B6170</color>
-    <color name="pure_outline_variant">#FFE2E6EF</color>
+    <color name="pure_hero_surface">#FFFFF7F6</color>
+    <color name="pure_hero_stroke">#FFF6D4D2</color>
+    <color name="pure_card_stroke">#FFE4E8F2</color>
+    <color name="pure_illustration_frame">#FFF1F3F9</color>
 
-    <color name="pure_nav_selected">#FF111318</color>
-    <color name="pure_nav_unselected">#FF606777</color>
+    <color name="pure_on_background">#FF10131A</color>
+    <color name="pure_on_surface">#FF10131A</color>
+    <color name="pure_on_surface_variant">#FF565E70</color>
+    <color name="pure_outline_variant">#FFDFE4EE</color>
+
+    <color name="pure_nav_selected">#FF10131A</color>
+    <color name="pure_nav_unselected">#FF636B7D</color>
     <color name="pure_nav_selected_bg">#FFE5E9F3</color>
-    <color name="pure_nav_pill_bg">#FFFDE5E4</color>
-    <color name="pure_nav_pill_icon">#FFD31A12</color>
+    <color name="pure_nav_pill_bg">#FFFCE2E0</color>
+    <color name="pure_nav_pill_icon">#FFD61910</color>
 
     <color name="pure_mini_player_surface">#FFFFFFFF</color>
-    <color name="pure_mini_player_stroke">#FFDCE1EC</color>
-    <color name="pure_progress_track">#22111318</color>
+    <color name="pure_mini_player_stroke">#FFD9DFEC</color>
+    <color name="pure_progress_track">#1F10131A</color>
     <color name="pure_progress_fill">#FFE62117</color>
 
-    <!-- Bảng màu riêng cho lớp điều khiển video: luôn nằm trên nền video tối
-         nên không phụ thuộc theme sáng/tối của ứng dụng. -->
+    <!-- Bảng màu riêng cho lớp điều khiển video: luôn nằm trên nền video tối. -->
     <color name="player_on_scrim">#FFFFFFFF</color>
-    <color name="player_on_scrim_secondary">#C7FFFFFF</color>
-    <color name="player_on_scrim_tertiary">#8CFFFFFF</color>
+    <color name="player_on_scrim_secondary">#CCFFFFFF</color>
+    <color name="player_on_scrim_tertiary">#94FFFFFF</color>
     <color name="player_scrim_control">#66000000</color>
-    <color name="player_scrim_solid">#F20A0C10</color>
+    <color name="player_scrim_solid">#F2090B10</color>
     <color name="player_live_badge">#FFE62117</color>
-    <color name="player_surface_pill">#E60A0C10</color>
+    <color name="player_surface_pill">#EB0B0E14</color>
 
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
