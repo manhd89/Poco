@@ -372,9 +372,9 @@ abstract class PageActivity : AppCompatActivity() {
                         renderPlayer()
                         applyKeepScreenOn()
                         if (applyFullscreenUi(input.state.isFullscreen)) {
-                            // Thanh hệ thống vừa ẩn/hiện: áp lại inset sau khi cờ
-                            // toàn màn hình đổi để nội dung không dùng inset cũ.
-                            playerOverlay.onWindowConfigurationChanged()
+                            // Thanh hệ thống vừa ẩn/hiện: áp lại inset mà không huỷ
+                            // hiệu ứng chuyển cảnh toàn màn hình đang chạy.
+                            playerOverlay.onSystemBarsVisibilityChanged()
                         }
                     }
                 }
