@@ -3,31 +3,31 @@
     <item
         android:id="@android:id/background"
         android:gravity="center_vertical"
-        android:height="3dp">
+        android:height="3.5dp">
         <shape android:shape="rectangle">
-            <solid android:color="#4DFFFFFF" />
-            <corners android:radius="2dp" />
+            <solid android:color="#3DFFFFFF" />
+            <corners android:radius="100dp" />
         </shape>
     </item>
     <item
         android:id="@android:id/secondaryProgress"
         android:gravity="center_vertical"
-        android:height="3dp">
+        android:height="3.5dp">
         <clip>
             <shape android:shape="rectangle">
                 <solid android:color="#80FFFFFF" />
-                <corners android:radius="2dp" />
+                <corners android:radius="100dp" />
             </shape>
         </clip>
     </item>
     <item
         android:id="@android:id/progress"
         android:gravity="center_vertical"
-        android:height="3dp">
+        android:height="3.5dp">
         <clip>
             <shape android:shape="rectangle">
                 <solid android:color="@color/pure_primary" />
-                <corners android:radius="2dp" />
+                <corners android:radius="100dp" />
             </shape>
         </clip>
     </item>

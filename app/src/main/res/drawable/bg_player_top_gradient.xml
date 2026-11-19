@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Scrim tối phía trên để tiêu đề/nút luôn đọc được trên mọi khung hình. -->
+<!-- Scrim tối phía trên giúp chữ và nút rõ ràng nhưng không làm xỉn khung hình. -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
     <gradient
         android:angle="270"
-        android:centerColor="#66000000"
-        android:endColor="#00000000"
-        android:startColor="#CC000000" />
+        android:centerColor="#4D080A0F"
+        android:endColor="#00080A0F"
+        android:startColor="#C4080A0F" />
 </shape>

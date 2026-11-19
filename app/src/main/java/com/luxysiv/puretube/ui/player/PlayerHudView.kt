@@ -106,6 +106,8 @@ class PlayerHudView @JvmOverloads constructor(
     private val unlockButton: ImageButton
 
     private val errorOverlay: View
+    private val errorCard: View
+    private val errorIcon: View
     private val errorTitle: TextView
     private val errorDetail: TextView
     private val errorRetry: View
@@ -181,6 +183,11 @@ class PlayerHudView @JvmOverloads constructor(
     /** Padding gốc của các thanh, dùng để cộng thêm window insets. */
     private val topBarBasePadding = IntArray(4)
     private val bottomControlsBasePadding = IntArray(4)
+
+    private var insetLeft = 0
+    private var insetTop = 0
+    private var insetRight = 0
+    private var insetBottom = 0
 
     private var subtitleWidth = 0
     private var subtitleHeight = 0
@@ -283,6 +290,8 @@ class PlayerHudView @JvmOverloads constructor(
         unlockButton = findViewById(R.id.hud_unlock)
 
         errorOverlay = findViewById(R.id.hud_error)
+        errorCard = findViewById(R.id.hud_error_card)
+        errorIcon = findViewById(R.id.hud_error_icon)
         errorTitle = findViewById(R.id.hud_error_title)
         errorDetail = findViewById(R.id.hud_error_detail)
         errorRetry = findViewById(R.id.hud_error_retry)
@@ -657,7 +666,7 @@ class PlayerHudView @JvmOverloads constructor(
             true
         }
 
-        seekPreview.translationY = -context.dp(28f).toFloat()
+        applyCompactMetrics()
         applyControlsVisibility()
     }
 
@@ -923,106 +932,169 @@ class PlayerHudView @JvmOverloads constructor(
 
     private fun applyCompactMetrics() {
         val density = resources.displayMetrics.density.coerceAtLeast(1f)
-        fun dp(value: Float) = (value * density).toInt()
+        fun dp(value: Float) = (value * density).roundToInt()
 
-        setHeight(topBar, dp(if (compact) 40f else 56f))
-        setHeight(topScrim, dp(if (compact) 76f else 136f))
-        setHeight(bottomScrim, dp(if (compact) 132f else 204f))
-        titleView.setTextSize(TypedValue.COMPLEX_UNIT_SP, if (compact) 13f else 15f)
+        setHeight(topBar, dp(if (compact) 48f else 60f))
+        setHeight(topScrim, dp(if (compact) 84f else 120f) + insetTop)
+        setHeight(bottomScrim, dp(if (compact) 116f else 152f) + insetBottom)
+        titleView.setTextSize(TypedValue.COMPLEX_UNIT_SP, if (compact) 13.5f else 15.5f)
 
-        val topIconSize = dp(if (compact) 36f else 44f)
-        val topIconPadding = dp(if (compact) 8f else 10f)
-        listOf(closeButton, autoPlayButton, pipButton).forEach { button ->
-            setSize(button, topIconSize)
-            button.setPadding(topIconPadding, topIconPadding, topIconPadding, topIconPadding)
-        }
-
-        val playSize = dp(if (compact) 48f else 72f)
-        val playPadding = dp(if (compact) 12f else 18f)
+        val playSize = dp(if (compact) 52f else 68f)
+        val playPadding = dp(if (compact) 13f else 17f)
         setSize(playPauseButton, playSize)
         playPauseButton.setPadding(playPadding, playPadding, playPadding, playPadding)
+        setSize(bufferingView, dp(if (compact) 42f else 50f))
 
-        setHeight(seekBar, dp(if (compact) 24f else 30f))
-        setHeight(seekContainer, dp(if (compact) 28f else 34f))
-        setHeight(buttonRow, dp(if (compact) 40f else 48f))
-        seekPreview.translationY = -dp(if (compact) 24f else 28f).toFloat()
+        setHeight(seekContainer, dp(if (compact) 28f else 32f))
+        setHeight(buttonRow, dp(if (compact) 44f else 48f))
 
-        val actionSize = dp(if (compact) 36f else 42f)
-        val actionPadding = dp(if (compact) 8f else 9f)
-        listOf(
-            mixButton,
-            captionsButton,
-            settingsButton,
-            fullscreenButton
-        ).forEach { button ->
-            setSize(button, actionSize)
-            button.setPadding(actionPadding, actionPadding, actionPadding, actionPadding)
+        // Thẻ lỗi tự co gọn ở khung 16:9 nhúng (~202dp cao) để không bao giờ bị cắt chữ hay nút Thử lại.
+        setSize(errorIcon, dp(if (compact) 24f else 32f))
+        errorCard.setPadding(
+            dp(if (compact) 16f else 22f),
+            dp(if (compact) 12f else 20f),
+            dp(if (compact) 16f else 22f),
+            dp(if (compact) 12f else 20f)
+        )
+        errorTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, if (compact) 14f else 15.5f)
+        (errorTitle.layoutParams as? ViewGroup.MarginLayoutParams)?.let { lp ->
+            lp.topMargin = dp(if (compact) 6f else 10f)
+            errorTitle.layoutParams = lp
+        }
+        (errorRetry.layoutParams as? ViewGroup.MarginLayoutParams)?.let { lp ->
+            lp.topMargin = dp(if (compact) 8f else 14f)
+            errorRetry.layoutParams = lp
         }
 
-        // Thanh dưới ở chế độ gọn cao ~90dp (thời gian + thanh tua + hàng nút),
-        // nên nút nổi phải nằm trên mốc đó để không đè lên hàng nút.
-        setBottomMargin(sponsorSkipButton, dp(if (compact) 92f else 104f))
-        setBottomMargin(lockButton, dp(if (compact) 92f else 104f))
-        setBottomMargin(unlockButton, dp(if (compact) 16f else 20f))
+        updateFloatingPositions()
         positionCenterControls()
     }
 
     private fun setHeight(view: View, height: Int) {
         val lp = view.layoutParams ?: return
-        lp.height = height
-        view.layoutParams = lp
+        if (lp.height != height) {
+            lp.height = height
+            view.layoutParams = lp
+        }
     }
 
     private fun setSize(view: View, size: Int) {
         val lp = view.layoutParams ?: return
-        lp.width = size
-        lp.height = size
-        view.layoutParams = lp
+        if (lp.width != size || lp.height != size) {
+            lp.width = size
+            lp.height = size
+            view.layoutParams = lp
+        }
     }
 
     private fun setBottomMargin(view: View, margin: Int) {
         val lp = view.layoutParams as? FrameLayout.LayoutParams ?: return
-        lp.bottomMargin = margin
-        view.layoutParams = lp
+        if (lp.bottomMargin != margin) {
+            lp.bottomMargin = margin
+            view.layoutParams = lp
+        }
+    }
+
+    private fun setTopMargin(view: View, margin: Int) {
+        val lp = view.layoutParams as? FrameLayout.LayoutParams ?: return
+        if (lp.topMargin != margin) {
+            lp.topMargin = margin
+            view.layoutParams = lp
+        }
+    }
+
+    private fun setEndMargin(view: View, margin: Int) {
+        val lp = view.layoutParams as? FrameLayout.LayoutParams ?: return
+        if (lp.marginEnd != margin) {
+            lp.marginEnd = margin
+            view.layoutParams = lp
+        }
+    }
+
+    private fun bottomDockHeightPx(): Int {
+        val density = resources.displayMetrics.density.coerceAtLeast(1f)
+        fun dp(value: Float) = (value * density).roundToInt()
+        val seekH = seekContainer.layoutParams?.height?.takeIf { it > 0 }
+            ?: dp(if (compact) 28f else 32f)
+        val rowH = buttonRow.layoutParams?.height?.takeIf { it > 0 }
+            ?: dp(if (compact) 44f else 48f)
+        return seekH + rowH + bottomControlsBasePadding[3]
+    }
+
+    private fun topBarHeightPx(): Int {
+        val density = resources.displayMetrics.density.coerceAtLeast(1f)
+        fun dp(value: Float) = (value * density).roundToInt()
+        return topBar.layoutParams?.height?.takeIf { it > 0 }
+            ?: dp(if (compact) 48f else 60f)
+    }
+
+    private fun updateFloatingPositions() {
+        val density = resources.displayMetrics.density.coerceAtLeast(1f)
+        fun dp(value: Float) = (value * density).roundToInt()
+        val dockHeight = bottomDockHeightPx()
+        val controlsOnScreen = controlsVisible && !isLocked && !playbackFailed
+        val sponsorBottom = if (controlsOnScreen) {
+            insetBottom + dockHeight + dp(8f)
+        } else {
+            insetBottom + dp(14f)
+        }
+        setBottomMargin(sponsorSkipButton, sponsorBottom)
+        setEndMargin(sponsorSkipButton, dp(14f) + insetRight)
+        setBottomMargin(seekPreview, insetBottom + dockHeight + dp(8f))
+        setBottomMargin(unlockButton, insetBottom + dp(20f))
+        unlockButton.translationX = (insetLeft - insetRight) / 2f
     }
 
     /**
-     * Cụm giữa kiểu YouTube: luôn nằm đúng tâm video, kể cả ở chế độ gọn nhúng
-     * (thanh dưới mỏng, chữ thời gian nằm hai mép nên cụm phát không đè chữ).
+     * Căn cụm play/pause vào đúng tâm khoảng trống giữa thanh trên và thanh dưới
+     * để không bao giờ chạm hay đè chữ trên khung 16:9 thấp.
      */
     private fun positionCenterControls() {
-        centerControls.translationY = 0f
-        // Spinner buffer nằm ngoài cụm giữa, luôn khớp tâm với nút play.
-        bufferingView.translationY = 0f
+        if (height <= 0) {
+            centerControls.translationY = 0f
+            bufferingView.translationY = 0f
+            return
+        }
+        val corridorTop = insetTop + topBarHeightPx()
+        val corridorBottom = (height - insetBottom - bottomDockHeightPx()).coerceAtLeast(corridorTop)
+        val corridorCenter = (corridorTop + corridorBottom) / 2f
+        val offset = corridorCenter - height / 2f
+        centerControls.translationY = offset
+        bufferingView.translationY = offset
     }
 
     /**
-     * Áp inset của hệ thống cho các lớp điều khiển. Video vẫn tràn viền; chỉ
-     * thanh trên/dưới và các nút nổi được đẩy vào vùng an toàn.
+     * Áp inset của hệ thống cho các lớp điều khiển. Video vẫn tràn viền; các
+     * thanh, scrim và nút nổi tự dịch vào vùng an toàn mà không lệch khỏi nền.
      */
     fun applyWindowInsets(left: Int, top: Int, right: Int, bottom: Int) {
-        // Dùng padding ngang nhưng dịch dọc thay vì padding dọc: topBar có chiều
-        // cao cố định nên padding dọc sẽ ép/clip các nút bên trong.
+        insetLeft = left
+        insetTop = top
+        insetRight = right
+        insetBottom = bottom
+        val density = resources.displayMetrics.density.coerceAtLeast(1f)
+        fun dp(value: Float) = (value * density).roundToInt()
+
         topBar.setPadding(
             topBarBasePadding[0] + left,
             topBarBasePadding[1],
             topBarBasePadding[2] + right,
             topBarBasePadding[3]
         )
-        topBar.translationY = top.toFloat()
+        setTopMargin(topBar, top)
+        setHeight(topScrim, dp(if (compact) 84f else 120f) + top)
+
         bottomControls.setPadding(
             bottomControlsBasePadding[0] + left,
             bottomControlsBasePadding[1],
             bottomControlsBasePadding[2] + right,
             bottomControlsBasePadding[3]
         )
-        bottomControls.translationY = -bottom.toFloat()
-        sponsorSkipButton.translationX = -right.toFloat()
-        sponsorSkipButton.translationY = -bottom.toFloat()
-        lockButton.translationX = left.toFloat()
-        lockButton.translationY = -bottom.toFloat()
-        unlockButton.translationX = left.toFloat()
-        unlockButton.translationY = -bottom.toFloat()
+        setBottomMargin(bottomControls, bottom)
+        setHeight(bottomScrim, dp(if (compact) 116f else 152f) + bottom)
+
+        updateFloatingPositions()
+        positionCenterControls()
     }
 
     // ------------------------------------------------------------------
@@ -1081,7 +1153,8 @@ class PlayerHudView @JvmOverloads constructor(
         if (isLive) return
         seekPreview.text = PlaybackPosition.formatTime(seconds.toLong())
         seekPreview.visibility = View.VISIBLE
-        if (seekPreview.width > 0 && seekContainer.width > 0) {
+        if (isSeeking) sponsorSkipButton.visibility = View.GONE
+        if (seekPreview.width > 0 && seekBar.width > 0) {
             positionSeekPreview(fraction)
         } else {
             seekPreview.post { positionSeekPreview(fraction) }
@@ -1090,15 +1163,19 @@ class PlayerHudView @JvmOverloads constructor(
 
     private fun hideSeekPreview() {
         seekPreview.visibility = View.GONE
+        state?.let { updateSponsorButton(it) }
     }
 
     private fun positionSeekPreview(fraction: Float) {
-        val trackLeft = seekBar.left + seekBar.paddingLeft
+        val density = resources.displayMetrics.density.coerceAtLeast(1f)
+        val marginPx = (10f * density).roundToInt()
+        val trackLeft = bottomControls.paddingLeft + seekContainer.left + seekBar.left + seekBar.paddingLeft
         val trackWidth =
             (seekBar.width - seekBar.paddingLeft - seekBar.paddingRight).coerceAtLeast(1)
         val centerX = trackLeft + trackWidth * fraction.coerceIn(0f, 1f)
-        val maxX = (seekContainer.width - seekPreview.width).coerceAtLeast(0)
-        seekPreview.translationX = (centerX - seekPreview.width / 2f).coerceIn(0f, maxX.toFloat())
+        val minX = (insetLeft + marginPx).toFloat()
+        val maxX = (width - insetRight - marginPx - seekPreview.width).toFloat().coerceAtLeast(minX)
+        seekPreview.translationX = (centerX - seekPreview.width / 2f).coerceIn(minX, maxX)
     }
 
     // ------------------------------------------------------------------
@@ -1156,7 +1233,7 @@ class PlayerHudView @JvmOverloads constructor(
 
     private fun updateSponsorButton(state: PurePlayerState) {
         val action = when {
-            isLocked || playbackFailed -> null
+            isLocked || playbackFailed || isSeeking -> null
             !state.isSponsorBlockEnabled -> null
             !state.sponsorShowSkipButton -> null
             state.sponsorCanUnskip -> getString(R.string.player_undo) to onUnskipSponsor
@@ -1194,6 +1271,7 @@ class PlayerHudView @JvmOverloads constructor(
         // HUD chưa có trạng thái (lần render đầu tiên).
         state?.let { updateSponsorButton(it) }
         if (isLocked) sponsorSkipButton.visibility = View.GONE
+        updateFloatingPositions()
         // Phụ đề phải nhường chỗ cho thanh điều khiển khi chúng đang hiện.
         if (subtitleWidth > 0 && subtitleHeight > 0) {
             updateSubtitleLayout(subtitleWidth, subtitleHeight)
@@ -1231,15 +1309,14 @@ class PlayerHudView @JvmOverloads constructor(
         flashPill.animate().cancel()
         removeCallbacks(flashRunnable)
         flashIcon.setImageResource(iconRes)
-        // Double-tap chỉ hiện icon hướng tua/play-pause, không nền tròn và
-        // không kèm nhãn "10 giây" để không che hình.
-        flashPill.setBackgroundResource(0)
+        setSize(flashIcon, context.dp(28f))
+        flashPill.setBackgroundResource(R.drawable.bg_player_flash)
         flashText.visibility = View.GONE
         flashPill.translationX = width * horizontalOffsetFraction
-        flashPill.translationY = 0f
+        flashPill.translationY = centerControls.translationY
         flashPill.alpha = 0f
-        flashPill.scaleX = 0.82f
-        flashPill.scaleY = 0.82f
+        flashPill.scaleX = 0.84f
+        flashPill.scaleY = 0.84f
         flashOverlay.visibility = View.VISIBLE
         flashPill.animate()
             .alpha(1f)
@@ -1251,18 +1328,25 @@ class PlayerHudView @JvmOverloads constructor(
     }
 
     /**
-     * Chỉ báo mức sáng/âm lượng/zoom. Khác [showFlash] ở chỗ không chạy lại
-     * animation mỗi lần vuốt (tránh nhấp nháy khi cập nhật liên tục).
+     * Chỉ báo mức sáng/âm lượng/zoom dạng viên thuốc kính mờ gọn ở phía trên
+     * hành lang giữa để không che nút play/pause hoặc trung tâm khung hình.
      */
     private fun showLevelIndicator(iconRes: Int, text: String) {
         flashPill.animate().cancel()
         removeCallbacks(flashRunnable)
         flashIcon.setImageResource(iconRes)
+        setSize(flashIcon, context.dp(20f))
         flashPill.setBackgroundResource(R.drawable.bg_player_flash)
         flashText.visibility = View.VISIBLE
         flashText.text = text
         flashPill.translationX = 0f
-        flashPill.translationY = 0f
+        val topAnchorY = insetTop + topBarHeightPx() + context.dp(28f)
+        val centerY = height / 2f
+        flashPill.translationY = if (height > 0) {
+            (topAnchorY - centerY).coerceAtMost(-context.dp(48f).toFloat())
+        } else {
+            -context.dp(56f).toFloat()
+        }
         flashPill.alpha = 1f
         flashPill.scaleX = 1f
         flashPill.scaleY = 1f
@@ -1378,9 +1462,9 @@ class PlayerHudView @JvmOverloads constructor(
         // lúc ẩn chỉ cần một khoảng đệm nhỏ để phụ đề không sát mép.
         val controlsOnScreen = controlsVisible && !isLocked && !playbackFailed
         val reservedDp = if (controlsOnScreen) {
-            if (compact) 82f else 104f
+            if (compact) 78f else 90f
         } else {
-            22f
+            20f
         }
         val bottomFraction = (reservedDp / heightDp).coerceIn(0.04f, 0.45f)
         @Suppress("DEPRECATION")

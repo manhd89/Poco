@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Nút phụ nổi trên video (khoá điều khiển, bỏ qua đoạn…). -->
-<ripple xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="#40FFFFFF">
-    <item>
-        <shape android:shape="oval">
-            <solid android:color="#4D000000" />
-            <stroke
-                android:width="1dp"
-                android:color="#26FFFFFF" />
-        </shape>
-    </item>
-</ripple>
+<!-- Nút tròn kính mờ trên video, giữ vùng chạm 48dp nhưng vòng tròn gọn 40dp. -->
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:inset="4dp">
+    <ripple android:color="#40FFFFFF">
+        <item>
+            <shape android:shape="oval">
+                <solid android:color="#7A0B0E14" />
+                <stroke
+                    android:width="1dp"
+                    android:color="#2EFFFFFF" />
+            </shape>
+        </item>
+    </ripple>
+</inset>

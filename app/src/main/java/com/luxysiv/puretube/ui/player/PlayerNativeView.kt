@@ -312,11 +312,12 @@ class PlayerNativeView @JvmOverloads constructor(
     private val detailsSheetCornerRadiusPx = context.dp(24f).toFloat()
     private val detailsSheetOutlineProvider = object : ViewOutlineProvider() {
         override fun getOutline(view: View, outline: Outline) {
+            val radius = detailsSheetCornerRadiusPx.roundToInt()
             outline.setRoundRect(
                 0,
                 0,
                 view.width.coerceAtLeast(1),
-                view.height.coerceAtLeast(1),
+                view.height.coerceAtLeast(1) + radius,
                 detailsSheetCornerRadiusPx
             )
         }
@@ -1115,7 +1116,7 @@ class PlayerNativeView @JvmOverloads constructor(
         } else {
             detailsContainer.setPadding(
                 context.dp(16f),
-                context.dp(4f),
+                0,
                 context.dp(16f),
                 context.dp(32f)
             )
